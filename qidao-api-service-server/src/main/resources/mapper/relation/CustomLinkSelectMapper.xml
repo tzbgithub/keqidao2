@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.relation.CustomLinkSelectMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.vo.SelectConfigResp">
+    </resultMap>
+
+    <select id="findSelectConfigByOrganization" resultMap="BaseResultMap">
+        SELECT DISTINCT sc.id,
+                        sc.val
+        from select_config sc
+                 left JOIN link_select ls on ls.select_config_id = sc.id
+                 LEFT JOIN achievement_equipment ae on ae.id = ls.source_id
+        where ae.organization_id = #{organizationId}
+          and ae.del_flag = 0
+    </select>
+
+    <select id="listMemberByPositionAndTime" resultType="Long">
+        select m.id
+        from member m
+                 left JOIN organization o ON m.organization_id = o.id
+                 left join select_config sc on m.position_id = sc.id
+
+            --         where o.type = 0
+--           and m.id not in ('139579535458305', '139721577660417')
+--         ORDER BY sc.sequence, m.create_time LIMIT 3;
+                 left JOIN link_select ls on ls.select_config_id = sc.id
+                 LEFT JOIN achievement_equipment ae on ae.id = ls.source_id
+        where ae.organization_id = #{organizationId}
+          and ae.del_flag = 0
+    </select>
+
+    <select id="listMemberWithoutSubscribe" resultType="Long">
+        SELECT m.id
+        FROM member m
+                 LEFT JOIN organization o ON m.organization_id = o.id
+                 LEFT JOIN select_config sc ON m.position_id = sc.id
+
+        where o.type = 0
+          and m.id not in (
+            SELECT subscribe_id
+            from subscribe
+
+            where member_id = #{memberId}
+              and subscribe_type = 0
+        )
+
+
+        ORDER BY sc.sequence,
+                 m.create_time
+
+        limit 3;
+    </select>
+
+
+    <select id="findOrganizationServerSkill" resultMap="BaseResultMap">
+        SELECT sc.id,
+               sc.val
+        FROM link_select ls
+                 LEFT JOIN select_config sc ON ls.select_config_id = sc.id
+        WHERE ls.source_id = #{organizationId}
+          AND ls.del_flag = 0
+          AND sc.del_flag = 0
+          AND ls.type = 11
+    </select>
+</mapper>

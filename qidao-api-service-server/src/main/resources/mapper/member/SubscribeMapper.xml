@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.member.SubscribeMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.entity.member.Subscribe">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+    <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="subscribe_id" jdbcType="BIGINT" property="subscribeId" />
+    <result column="subscribe_time" jdbcType="TIMESTAMP" property="subscribeTime" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="subscribe_head_img" jdbcType="VARCHAR" property="subscribeHeadImg" />
+    <result column="subscribe_name" jdbcType="VARCHAR" property="subscribeName" />
+    <result column="subscribe_position" jdbcType="VARCHAR" property="subscribePosition" />
+    <result column="subscribe_organization_name" jdbcType="VARCHAR" property="subscribeOrganizationName" />
+    <result column="subscribe_type" jdbcType="INTEGER" property="subscribeType" />
+    <result column="subscribe_education" jdbcType="VARCHAR" property="subscribeEducation" />
+    <result column="subscribe_belong" jdbcType="VARCHAR" property="subscribeBelong" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, create_time, update_time, create_by, update_by, del_flag, member_id, subscribe_id, 
+    subscribe_time, type, subscribe_head_img, subscribe_name, subscribe_position, subscribe_organization_name, 
+    subscribe_type, subscribe_education, subscribe_belong
+  </sql>
+  <select id="selectByExample" parameterType="com.qidao.application.entity.member.SubscribeExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from subscribe
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="rows != null">
+      <if test="offset != null">
+        limit ${offset}, ${rows}
+      </if>
+      <if test="offset == null">
+        limit ${rows}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from subscribe
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from subscribe
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.qidao.application.entity.member.SubscribeExample">
+    delete from subscribe
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.qidao.application.entity.member.Subscribe">
+    insert into subscribe (id, create_time, update_time, 
+      create_by, update_by, del_flag, 
+      member_id, subscribe_id, subscribe_time, 
+      type, subscribe_head_img, subscribe_name, 
+      subscribe_position, subscribe_organization_name, 
+      subscribe_type, subscribe_education, subscribe_belong
+      )
+    values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=BIGINT}, #{updateBy,jdbcType=BIGINT}, #{delFlag,jdbcType=TINYINT}, 
+      #{memberId,jdbcType=BIGINT}, #{subscribeId,jdbcType=BIGINT}, #{subscribeTime,jdbcType=TIMESTAMP}, 
+      #{type,jdbcType=INTEGER}, #{subscribeHeadImg,jdbcType=VARCHAR}, #{subscribeName,jdbcType=VARCHAR}, 
+      #{subscribePosition,jdbcType=VARCHAR}, #{subscribeOrganizationName,jdbcType=VARCHAR}, 
+      #{subscribeType,jdbcType=INTEGER}, #{subscribeEducation,jdbcType=VARCHAR}, #{subscribeBelong,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="map">
+    insert into subscribe
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          ${column.escapedColumnName}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            id,
+          </if>
+          <if test="record.createTime != null">
+            create_time,
+          </if>
+          <if test="record.updateTime != null">
+            update_time,
+          </if>
+          <if test="record.createBy != null">
+            create_by,
+          </if>
+          <if test="record.updateBy != null">
+            update_by,
+          </if>
+          <if test="record.delFlag != null">
+            del_flag,
+          </if>
+          <if test="record.memberId != null">
+            member_id,
+          </if>
+          <if test="record.subscribeId != null">
+            subscribe_id,
+          </if>
+          <if test="record.subscribeTime != null">
+            subscribe_time,
+          </if>
+          <if test="record.type != null">
+            type,
+          </if>
+          <if test="record.subscribeHeadImg != null">
+            subscribe_head_img,
+          </if>
+          <if test="record.subscribeName != null">
+            subscribe_name,
+          </if>
+          <if test="record.subscribePosition != null">
+            subscribe_position,
+          </if>
+          <if test="record.subscribeOrganizationName != null">
+            subscribe_organization_name,
+          </if>
+          <if test="record.subscribeType != null">
+            subscribe_type,
+          </if>
+          <if test="record.subscribeEducation != null">
+            subscribe_education,
+          </if>
+          <if test="record.subscribeBelong != null">
+            subscribe_belong,
+          </if>
+        </trim>
+        <trim prefix="(" suffix=")" suffixOverrides="," />
+      </otherwise>
+    </choose>
+    values
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.createTime != null">
+            #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            #{record.delFlag,jdbcType=TINYINT},
+          </if>
+          <if test="record.memberId != null">
+            #{record.memberId,jdbcType=BIGINT},
+          </if>
+          <if test="record.subscribeId != null">
+            #{record.subscribeId,jdbcType=BIGINT},
+          </if>
+          <if test="record.subscribeTime != null">
+            #{record.subscribeTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.type != null">
+            #{record.type,jdbcType=INTEGER},
+          </if>
+          <if test="record.subscribeHeadImg != null">
+            #{record.subscribeHeadImg,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeName != null">
+            #{record.subscribeName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribePosition != null">
+            #{record.subscribePosition,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeOrganizationName != null">
+            #{record.subscribeOrganizationName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeType != null">
+            #{record.subscribeType,jdbcType=INTEGER},
+          </if>
+          <if test="record.subscribeEducation != null">
+            #{record.subscribeEducation,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeBelong != null">
+            #{record.subscribeBelong,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+  </insert>
+  <select id="countByExample" parameterType="com.qidao.application.entity.member.SubscribeExample" resultType="java.lang.Long">
+    select count(*) from subscribe
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update subscribe
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.id != null">
+            id = #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.createTime != null">
+            create_time = #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            create_by = #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            update_by = #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+          <if test="record.memberId != null">
+            member_id = #{record.memberId,jdbcType=BIGINT},
+          </if>
+          <if test="record.subscribeId != null">
+            subscribe_id = #{record.subscribeId,jdbcType=BIGINT},
+          </if>
+          <if test="record.subscribeTime != null">
+            subscribe_time = #{record.subscribeTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.type != null">
+            type = #{record.type,jdbcType=INTEGER},
+          </if>
+          <if test="record.subscribeHeadImg != null">
+            subscribe_head_img = #{record.subscribeHeadImg,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeName != null">
+            subscribe_name = #{record.subscribeName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribePosition != null">
+            subscribe_position = #{record.subscribePosition,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeOrganizationName != null">
+            subscribe_organization_name = #{record.subscribeOrganizationName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeType != null">
+            subscribe_type = #{record.subscribeType,jdbcType=INTEGER},
+          </if>
+          <if test="record.subscribeEducation != null">
+            subscribe_education = #{record.subscribeEducation,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeBelong != null">
+            subscribe_belong = #{record.subscribeBelong,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update subscribe
+    set id = #{record.id,jdbcType=BIGINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      create_by = #{record.createBy,jdbcType=BIGINT},
+      update_by = #{record.updateBy,jdbcType=BIGINT},
+      del_flag = #{record.delFlag,jdbcType=TINYINT},
+      member_id = #{record.memberId,jdbcType=BIGINT},
+      subscribe_id = #{record.subscribeId,jdbcType=BIGINT},
+      subscribe_time = #{record.subscribeTime,jdbcType=TIMESTAMP},
+      type = #{record.type,jdbcType=INTEGER},
+      subscribe_head_img = #{record.subscribeHeadImg,jdbcType=VARCHAR},
+      subscribe_name = #{record.subscribeName,jdbcType=VARCHAR},
+      subscribe_position = #{record.subscribePosition,jdbcType=VARCHAR},
+      subscribe_organization_name = #{record.subscribeOrganizationName,jdbcType=VARCHAR},
+      subscribe_type = #{record.subscribeType,jdbcType=INTEGER},
+      subscribe_education = #{record.subscribeEducation,jdbcType=VARCHAR},
+      subscribe_belong = #{record.subscribeBelong,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="map">
+    update subscribe
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.createTime != null">
+            create_time = #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            create_by = #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            update_by = #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+          <if test="record.memberId != null">
+            member_id = #{record.memberId,jdbcType=BIGINT},
+          </if>
+          <if test="record.subscribeId != null">
+            subscribe_id = #{record.subscribeId,jdbcType=BIGINT},
+          </if>
+          <if test="record.subscribeTime != null">
+            subscribe_time = #{record.subscribeTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.type != null">
+            type = #{record.type,jdbcType=INTEGER},
+          </if>
+          <if test="record.subscribeHeadImg != null">
+            subscribe_head_img = #{record.subscribeHeadImg,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeName != null">
+            subscribe_name = #{record.subscribeName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribePosition != null">
+            subscribe_position = #{record.subscribePosition,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeOrganizationName != null">
+            subscribe_organization_name = #{record.subscribeOrganizationName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeType != null">
+            subscribe_type = #{record.subscribeType,jdbcType=INTEGER},
+          </if>
+          <if test="record.subscribeEducation != null">
+            subscribe_education = #{record.subscribeEducation,jdbcType=VARCHAR},
+          </if>
+          <if test="record.subscribeBelong != null">
+            subscribe_belong = #{record.subscribeBelong,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    where id = #{record.id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qidao.application.entity.member.Subscribe">
+    update subscribe
+    set create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=BIGINT},
+      update_by = #{updateBy,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=TINYINT},
+      member_id = #{memberId,jdbcType=BIGINT},
+      subscribe_id = #{subscribeId,jdbcType=BIGINT},
+      subscribe_time = #{subscribeTime,jdbcType=TIMESTAMP},
+      type = #{type,jdbcType=INTEGER},
+      subscribe_head_img = #{subscribeHeadImg,jdbcType=VARCHAR},
+      subscribe_name = #{subscribeName,jdbcType=VARCHAR},
+      subscribe_position = #{subscribePosition,jdbcType=VARCHAR},
+      subscribe_organization_name = #{subscribeOrganizationName,jdbcType=VARCHAR},
+      subscribe_type = #{subscribeType,jdbcType=INTEGER},
+      subscribe_education = #{subscribeEducation,jdbcType=VARCHAR},
+      subscribe_belong = #{subscribeBelong,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectOneByExample" parameterType="com.qidao.application.entity.member.SubscribeExample" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from subscribe
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+  <insert id="batchInsert" parameterType="map">
+    insert into subscribe
+    (id, create_time, update_time, create_by, update_by, del_flag, member_id, subscribe_id, 
+      subscribe_time, type, subscribe_head_img, subscribe_name, subscribe_position, subscribe_organization_name, 
+      subscribe_type, subscribe_education, subscribe_belong)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+        #{item.createBy,jdbcType=BIGINT}, #{item.updateBy,jdbcType=BIGINT}, #{item.delFlag,jdbcType=TINYINT}, 
+        #{item.memberId,jdbcType=BIGINT}, #{item.subscribeId,jdbcType=BIGINT}, #{item.subscribeTime,jdbcType=TIMESTAMP}, 
+        #{item.type,jdbcType=INTEGER}, #{item.subscribeHeadImg,jdbcType=VARCHAR}, #{item.subscribeName,jdbcType=VARCHAR}, 
+        #{item.subscribePosition,jdbcType=VARCHAR}, #{item.subscribeOrganizationName,jdbcType=VARCHAR}, 
+        #{item.subscribeType,jdbcType=INTEGER}, #{item.subscribeEducation,jdbcType=VARCHAR}, 
+        #{item.subscribeBelong,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="batchInsertSelective" parameterType="map">
+    insert into subscribe (
+    <foreach collection="selective" item="column" separator=",">
+      ${column.escapedColumnName}
+    </foreach>
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (
+      <foreach collection="selective" item="column" separator=",">
+        <if test="'id'.toString() == column.value">
+          #{item.id,jdbcType=BIGINT}
+        </if>
+        <if test="'create_time'.toString() == column.value">
+          #{item.createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'update_time'.toString() == column.value">
+          #{item.updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'create_by'.toString() == column.value">
+          #{item.createBy,jdbcType=BIGINT}
+        </if>
+        <if test="'update_by'.toString() == column.value">
+          #{item.updateBy,jdbcType=BIGINT}
+        </if>
+        <if test="'del_flag'.toString() == column.value">
+          #{item.delFlag,jdbcType=TINYINT}
+        </if>
+        <if test="'member_id'.toString() == column.value">
+          #{item.memberId,jdbcType=BIGINT}
+        </if>
+        <if test="'subscribe_id'.toString() == column.value">
+          #{item.subscribeId,jdbcType=BIGINT}
+        </if>
+        <if test="'subscribe_time'.toString() == column.value">
+          #{item.subscribeTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'type'.toString() == column.value">
+          #{item.type,jdbcType=INTEGER}
+        </if>
+        <if test="'subscribe_head_img'.toString() == column.value">
+          #{item.subscribeHeadImg,jdbcType=VARCHAR}
+        </if>
+        <if test="'subscribe_name'.toString() == column.value">
+          #{item.subscribeName,jdbcType=VARCHAR}
+        </if>
+        <if test="'subscribe_position'.toString() == column.value">
+          #{item.subscribePosition,jdbcType=VARCHAR}
+        </if>
+        <if test="'subscribe_organization_name'.toString() == column.value">
+          #{item.subscribeOrganizationName,jdbcType=VARCHAR}
+        </if>
+        <if test="'subscribe_type'.toString() == column.value">
+          #{item.subscribeType,jdbcType=INTEGER}
+        </if>
+        <if test="'subscribe_education'.toString() == column.value">
+          #{item.subscribeEducation,jdbcType=VARCHAR}
+        </if>
+        <if test="'subscribe_belong'.toString() == column.value">
+          #{item.subscribeBelong,jdbcType=VARCHAR}
+        </if>
+      </foreach>
+      )
+    </foreach>
+  </insert>
+
+
+    <select id="selectSubscribeId" resultType="java.lang.Long">
+        select
+        s.id
+        FROM
+            subscribe s
+        WHERE
+            s.del_flag = 0
+        AND s.subscribe_type = 0
+        AND s.type = 0
+        AND s.subscribe_id in
+        <foreach collection="subscribeIds" item="id" open="(" separator="," close=")" index="index">
+        #{id}
+        </foreach>
+        AND s.member_id = #{memberId}
+
+        limit 1
+    </select>
+</mapper>

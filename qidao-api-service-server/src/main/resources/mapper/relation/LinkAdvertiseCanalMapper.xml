@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.relation.LinkAdvertiseCanalMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.entity.relation.LinkAdvertiseCanal">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="advertise_id" jdbcType="BIGINT" property="advertiseId" />
+    <result column="canal_id" jdbcType="BIGINT" property="canalId" />
+    <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, advertise_id, canal_id, del_flag
+  </sql>
+  <select id="selectByExample" parameterType="com.qidao.application.entity.relation.LinkAdvertiseCanalExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from link_advertise_canal
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="rows != null">
+      <if test="offset != null">
+        limit ${offset}, ${rows}
+      </if>
+      <if test="offset == null">
+        limit ${rows}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from link_advertise_canal
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from link_advertise_canal
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.qidao.application.entity.relation.LinkAdvertiseCanalExample">
+    delete from link_advertise_canal
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.qidao.application.entity.relation.LinkAdvertiseCanal">
+    insert into link_advertise_canal (id, advertise_id, canal_id, 
+      del_flag)
+    values (#{id,jdbcType=BIGINT}, #{advertiseId,jdbcType=BIGINT}, #{canalId,jdbcType=BIGINT}, 
+      #{delFlag,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="map">
+    insert into link_advertise_canal
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          ${column.escapedColumnName}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            id,
+          </if>
+          <if test="record.advertiseId != null">
+            advertise_id,
+          </if>
+          <if test="record.canalId != null">
+            canal_id,
+          </if>
+          <if test="record.delFlag != null">
+            del_flag,
+          </if>
+        </trim>
+        <trim prefix="(" suffix=")" suffixOverrides="," />
+      </otherwise>
+    </choose>
+    values
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.advertiseId != null">
+            #{record.advertiseId,jdbcType=BIGINT},
+          </if>
+          <if test="record.canalId != null">
+            #{record.canalId,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            #{record.delFlag,jdbcType=TINYINT},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+  </insert>
+  <select id="countByExample" parameterType="com.qidao.application.entity.relation.LinkAdvertiseCanalExample" resultType="java.lang.Long">
+    select count(*) from link_advertise_canal
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update link_advertise_canal
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.id != null">
+            id = #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.advertiseId != null">
+            advertise_id = #{record.advertiseId,jdbcType=BIGINT},
+          </if>
+          <if test="record.canalId != null">
+            canal_id = #{record.canalId,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update link_advertise_canal
+    set id = #{record.id,jdbcType=BIGINT},
+      advertise_id = #{record.advertiseId,jdbcType=BIGINT},
+      canal_id = #{record.canalId,jdbcType=BIGINT},
+      del_flag = #{record.delFlag,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="map">
+    update link_advertise_canal
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.advertiseId != null">
+            advertise_id = #{record.advertiseId,jdbcType=BIGINT},
+          </if>
+          <if test="record.canalId != null">
+            canal_id = #{record.canalId,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    where id = #{record.id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qidao.application.entity.relation.LinkAdvertiseCanal">
+    update link_advertise_canal
+    set advertise_id = #{advertiseId,jdbcType=BIGINT},
+      canal_id = #{canalId,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectOneByExample" parameterType="com.qidao.application.entity.relation.LinkAdvertiseCanalExample" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from link_advertise_canal
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+  <insert id="batchInsert" parameterType="map">
+    insert into link_advertise_canal
+    (id, advertise_id, canal_id, del_flag)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.advertiseId,jdbcType=BIGINT}, #{item.canalId,jdbcType=BIGINT}, 
+        #{item.delFlag,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+  <insert id="batchInsertSelective" parameterType="map">
+    insert into link_advertise_canal (
+    <foreach collection="selective" item="column" separator=",">
+      ${column.escapedColumnName}
+    </foreach>
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (
+      <foreach collection="selective" item="column" separator=",">
+        <if test="'id'.toString() == column.value">
+          #{item.id,jdbcType=BIGINT}
+        </if>
+        <if test="'advertise_id'.toString() == column.value">
+          #{item.advertiseId,jdbcType=BIGINT}
+        </if>
+        <if test="'canal_id'.toString() == column.value">
+          #{item.canalId,jdbcType=BIGINT}
+        </if>
+        <if test="'del_flag'.toString() == column.value">
+          #{item.delFlag,jdbcType=TINYINT}
+        </if>
+      </foreach>
+      )
+    </foreach>
+  </insert>
+</mapper>

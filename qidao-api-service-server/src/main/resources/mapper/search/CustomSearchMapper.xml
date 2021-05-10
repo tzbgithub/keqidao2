@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qidao.application.mapper.search.CustomSearchMapper">
+
+    <resultMap id="getSearchDynamicMap" type="com.qidao.application.entity.search.SearchDynamic">
+        <id column="dynamicId" property="dynamicId"/>
+        <result column="title" property="title"/>
+        <result column="likeNum" property="likeNum"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="dynamicContent" property="content"/>
+        <result column="summary" property="summary"/>
+        <result column="url" property="url"/>
+        <result column="organizationName" property="organizationName"/>
+        <result column="name" property="name"/>
+        <result column="belong" property="belong"/>
+        <result column="headImage" property="headImage"/>
+        <result column="publisherId" property="publisherId"/>
+        <result column="position" property="position"/>
+        <result column="education" property="education"/>
+        <result column="cooperation" property="cooperation"/>
+        <result column="commentNum" property="commentNum"/>
+        <result column="thumb" property="thumb"/>
+        <result column="video" property="video"/>
+        <result column="img" property="img"/>
+        <result column="labelIds" property="labelIds"/>
+        <result column="labelVals" property="labelVals"/>
+        <result column="type" property="type"/>
+    </resultMap>
+    <select id="getSearchDynamic" resultMap="getSearchDynamicMap">
+        SELECT dy.title , dy.comment_num commentNum, dy.like_num likeNum , dy.publish_time publishTime,
+               dy.content dynamicContent,dy.id dynamicId,dy.summary ,dy.url,dy.video ,dy.thumb,
+               dy.img,dy.type,
+               org.`name` organizationName ,
+               me.`name` , me.belong , me.head_image headImage , dy.member_id publisherId,
+               sel.val position ,
+        edu.val education,
+        coo.val cooperation,
+			   group_concat(ll.label_id) labelIds,
+			   group_concat(la.val) labelVals
+        FROM `dynamic` dy
+            LEFT JOIN `member` me on dy.member_id = me.id
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            LEFT JOIN `select_config` coo on dy.cooperation_type = coo.id and coo.`status` = 0 and coo.del_flag = 0
+            LEFT JOIN `link_label` ll on dy.id = ll.source_id and ll.type = 0 and ll.del_flag = 0
+            LEFT JOIN `label` la on ll.label_id = la.id and la.del_flag = 0
+        where dy.del_flag = 0 and me.del_flag = 0 and dy.verify_status = 3 and org.type = 0 and me.verify_status = 2
+        <if test="keyword != null and keyword != '' ">
+            and (dy.summary like
+            concat(concat('%',#{keyword}),'%')
+            or dy.title like
+            concat(concat('%',#{keyword}),'%')
+            or la.val like
+            concat(concat('%',#{keyword}),'%'))
+        </if>
+        <if test="memberIds != null and memberIds.size > 0">
+            and dy.member_id not in
+            <foreach collection="memberIds" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+        </if>
+        group by dy.id
+order by dy.publish_time
+    </select>
+<!--    <resultMap id="getSearchServerMap" type="com.qidao.application.entity.search.SearchServer">
+        <id column="serverId" property="serverId"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="thumb" property="thumb"/>
+        <result column="url" property="url"/>
+        <result column="create_time" property="createTime"/>
+        <result column="address_province_name" property="province"/>
+        <result column="address_city_name" property="city"/>
+        <result column="address_area_name" property="area"/>
+        <result column="money" property="money"/>
+        <collection property="labels" ofType="com.qidao.application.vo.LinkLabelVo">
+            <id column="label_id" property="labelId"/>
+            <result column="val" property="val"/>
+        </collection>
+    </resultMap>
+    <select id="getSearchServer" resultMap="getSearchServerMap">
+        SELECT
+            se.id serverId , se.title , se.description , se.thumb , se.url , se.create_time,
+            se.address_province_name , se.address_city_name , se.address_area_name,
+            sel.val money ,
+            ll.label_id ,
+            la.val
+        from `server` se
+         LEFT JOIN `select_config` sel on se.spec_amount_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+         LEFT JOIN `link_label` ll on se.id = ll.source_id and ll.type = 1 and ll.del_flag = 0
+         LEFT JOIN `label` la on ll.label_id = la.id and la.del_flag = 0
+        where se.del_flag = 0
+        <if test="keyword != null and keyword != '' ">
+            and (se.title like
+            concat(concat('%',#{keyword}),'%')
+            or la.val like
+            concat(concat('%',#{keyword}),'%'))
+        </if>
+    </select>-->
+    <select id="getSearchMember" resultType="com.qidao.application.entity.search.SearchMember">
+        SELECT m.id , m.head_image headImage , m.`name` , edu.val education , pos.val position , o.`name` organizationName  , o.belong FROM `member` m
+            LEFT JOIN `organization` o on m.organization_id = o.id
+            LEFT JOIN `select_config` edu on m.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            LEFT JOIN `select_config` pos on m.position_id = pos.id and pos.`status` = 0 and pos.del_flag = 0
+        where m.del_flag = 0 and o.type = 0 and m.verify_status = 2
+        <if test="keyword != null and keyword != '' ">
+            and m.name like
+            concat(concat('%',#{keyword}),'%')
+        </if>
+        <if test="memberIds != null and memberIds.size > 0">
+            and m.id not in
+            <foreach collection="memberIds" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+        </if>
+    </select>
+    <resultMap id="getSearchAchievementEquipmentMap" type="com.qidao.application.entity.search.SearchAchievementEquipment">
+        <id column="memberId" property="memberId"/>
+        <result column="name" property="memberName"/>
+        <result column="headImage" property="memberHeadImage"/>
+        <result column="organizationName" property="organizationName"/>
+        <result column="belong" property="belong"/>
+        <result column="education" property="education"/>
+        <result column="create_time" property="createTime"/>
+        <result column="position" property="position"/>
+        <result column="id" property="achievementEquipmentId"/>
+        <result column="title" property="title"/>
+        <result column="summary" property="summary"/>
+        <result column="maturity" property="maturity"/>
+        <result column="thumb" property="thumb"/>
+        <result column="video" property="video"/>
+        <result column="url" property="url"/>
+        <result column="imgs" property="imgs"/>
+        <collection property="labelVos" ofType="com.qidao.application.vo.LinkLabelVo">
+            <id column="label_id" property="labelId"/>
+            <result column="val" property="val"/>
+        </collection>
+    </resultMap>
+
+    <select id="getSearchAchievementEquipment"
+            resultMap="getSearchDynamicMap">
+        SELECT m.id publisherId,
+               m.head_image headImage ,
+               m.`name` ,
+               edu.val education ,
+               pos.val position ,
+               coo.val cooperation ,
+               o.`name`   organizationName  ,
+               o.belong,
+               ae.title ,
+               ae.summary ,
+               ae.create_time  publishTime,
+               ae.url ,
+               ae.video ,
+               ae.imgs img,
+               ae.id dynamicId,
+               group_concat(ll.label_id) labelIds ,
+               group_concat(la.val) labelVals
+        FROM `achievement_equipment` ae
+            LEFT JOIN `member` m on ae.member_id = m.id
+            LEFT JOIN `organization` o on m.organization_id = o.id
+            LEFT JOIN `select_config` edu on m.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            LEFT JOIN `select_config` coo on ae.cooperation_type = coo.id and coo.`status` = 0 and coo.del_flag = 0
+            LEFT JOIN `select_config` pos on m.position_id = pos.id and pos.`status` = 0 and pos.del_flag = 0
+            LEFT JOIN `link_label` ll on ae.id = ll.source_id and ll.type = 5 and ll.del_flag = 0
+            LEFT JOIN `label` la on ll.label_id = la.id and la.del_flag = 0
+        where ae.del_flag = 0 and ae.verify_status = 1 and m.del_flag = 0 and o.type = 0 and m.verify_status = 2
+        <if test="keyword != null and keyword != '' ">
+            and (ae.title like
+            concat(concat('%',#{keyword}),'%')
+            or la.val like
+            concat(concat('%',#{keyword}),'%'))
+        </if>
+        <if test="memberIds != null and memberIds.size > 0">
+            and ae.member_id not in
+            <foreach collection="memberIds" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+        </if>
+group by ae.id
+order by ae.create_time
+    </select>
+</mapper>

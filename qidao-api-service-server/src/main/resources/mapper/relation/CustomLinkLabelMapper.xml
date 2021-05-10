@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.relation.CustomLinkLabelMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.vo.LinkLabelVo">
+  </resultMap>
+
+
+  <select id="findLinkLabelBySourceId" resultMap="BaseResultMap">
+        SELECT DISTINCT
+          lb.label_id as labelId,b.val
+    FROM
+        link_label lb
+    INNER JOIN  label b ON lb.label_id = b.id
+    where lb.source_id = #{sourceId}
+
+  </select>
+</mapper>

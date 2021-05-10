@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.order.CustomOrderMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.entity.order.CustomOrder">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+        <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+        <result column="no" jdbcType="BIGINT" property="no" />
+        <result column="product_sku_id" jdbcType="BIGINT" property="productSkuId" />
+        <result column="member_id" jdbcType="BIGINT" property="memberId" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="member_name" jdbcType="VARCHAR" property="memberName" />
+        <result column="pay_time" jdbcType="TIMESTAMP" property="payTime" />
+        <result column="pay_price" jdbcType="DECIMAL" property="payPrice" />
+        <result column="order_price" jdbcType="DECIMAL" property="orderPrice" />
+        <result column="pay_way" jdbcType="INTEGER" property="payWay" />
+        <result column="product_sku_name" jdbcType="VARCHAR" property="productSkuName" />
+        <result column="physical_flag" jdbcType="INTEGER" property="physicalFlag" />
+        <result column="third_order_no" jdbcType="VARCHAR" property="thirdOrderNo" />
+        <result column="vip_start_time" jdbcType="TIMESTAMP" property="vipStartTime" />
+        <result column="vip_end_time" jdbcType="TIMESTAMP" property="vipEndTime" />
+        <result column="finalVipEndTime" jdbcType="TIMESTAMP" property="finalVipEndTime" />
+        <result column="physical_flag"  property="physicalFlag" />
+        <result column="third_order_no"  property="thirdOrderNo" />
+        <result column="logistics_no"  property="logisticsNo" />
+        <result column="logistics_type"  property="logisticsType" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, create_time, update_time, create_by, update_by, del_flag, no, product_sku_id,
+    member_id, status, member_name, pay_time, pay_price, order_price, quantity, pay_way,
+    product_sku_name, vip_start_time, vip_end_time,physical_flag,third_order_no
+    </sql>
+    <update id="updateStatusPayment">
+        update `order` set `status` = 1 where id = #{id}
+    </update>
+    <update id="updateStatusClosed">
+        update `order` set `status` = 2 where id = #{id}
+    </update>
+    <update id="updateStatusDone">
+        update `order`
+        set `status` = 5,`pay_time` = now(),`pay_way`=#{payType},
+        <if test="thirdOrderNo != null and thirdOrderNo != '' ">
+            third_order_no = #{thirdOrderNo},
+        </if>
+        <if test="isSandbox">
+            sandbox_order = 1,
+        </if>
+        vip_start_time = #{vipStartTime},vip_end_time= #{vipEndTime},product_sku_name=#{productSkuName}
+        where id = #{id} and physical_flag = 0
+    </update>
+    <update id="updateStatusPaidPhysical">
+        update `order`
+        set `status` = 1,`pay_time` = now(),`pay_way`=#{payType},
+        <if test="thirdOrderNo != null and thirdOrderNo != '' ">
+            third_order_no = #{thirdOrderNo},
+        </if>
+        <if test="isSandbox">
+            sandbox_order = 1,
+        </if>
+        vip_start_time = #{vipStartTime},vip_end_time= #{vipEndTime},product_sku_name=#{productSkuName}
+        where id = #{id} and physical_flag = 1
+    </update>
+
+    <select id="getOrderByMemberId" resultMap="BaseResultMap" >
+        select
+            o.id,  o.create_time, o.update_time, o.create_by, o.update_by, o.del_flag, o.no, o.product_sku_id,
+            m.id member_id, o.status, m.name member_name, o.pay_time, o.pay_price, o.order_price, o.quantity, o.pay_way,
+            p.name product_sku_name, o.vip_start_time, o.vip_end_time , m.vip_end_time finalVipEndTime,
+            opd.logistics_type ,
+            opd.logistics_no ,
+            o.physical_flag ,
+            o.third_order_no
+        from `order` o
+        left join `product_sku` p on o.product_sku_id = p.id
+        left join `member` m on o.member_id = m.id
+        left join `order_physical_detail` opd on o.id = opd.order_id
+        where o.member_id = #{memberId , jdbcType=BIGINT} and o.del_flag = 0 and o.status != 0
+        <if test="physicalFlag != null">
+            and physical_flag = #{physicalFlag}
+        </if>
+        order by o.create_time desc
+    </select>
+
+    <select id="getOrderById" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from `order`
+        where id = #{id}
+    </select>
+    <select id="getOrderDescription" resultType="com.qidao.application.entity.order.OrderDescription">
+        SELECT o.id , o.no , o.member_id memberId , o.member_name memberName , o.pay_time payTime ,
+               o.pay_price payPrice , o.`status` , o.order_price orderPrice , o.product_sku_id productSkuId,
+               p.`name` productName , p.summary productSummary , p.imgs productImg ,o.pay_way payWay,
+               p.sale_price salePrice , p.market_price marketPrice,o.quantity ,
+               m.phone ,o.vip_start_time vipStartTime,o.vip_end_time vipEndTime,
+               opd.logistics_type logisticsType,
+               opd.logistics_no logisticsNo,
+               o.physical_flag physicalFlag,
+               o.third_order_no  thirdOrderNo
+        FROM `order` o
+                 LEFT JOIN `product_sku` p on o.product_sku_id = p.id and p.del_flag = 0
+            left join `order_physical_detail` opd on o.id = opd.order_id
+        left join `member` m on o.member_id = m.id
+        where o.`no` = #{orderNo} and o.member_id = #{memberId} and o.del_flag = 0
+    </select>
+    <select id="queryOrderStatus" resultType="com.qidao.application.entity.order.Order">
+        select <include refid="Base_Column_List" /> from `order` where id = #{id} and del_flag = 0
+    </select>
+
+    <insert id="insertSelective" parameterType="map">
+        insert into `order`
+        <choose>
+            <when test="selective != null and selective.length > 0">
+                <foreach close=")" collection="selective" item="column" open="(" separator=",">
+                    ${column.escapedColumnName}
+                </foreach>
+            </when>
+            <otherwise>
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="record.id != null">
+                        id,
+                    </if>
+                    <if test="record.createTime != null">
+                        create_time,
+                    </if>
+                    <if test="record.updateTime != null">
+                        update_time,
+                    </if>
+                    <if test="record.createBy != null">
+                        create_by,
+                    </if>
+                    <if test="record.updateBy != null">
+                        update_by,
+                    </if>
+                    <if test="record.delFlag != null">
+                        del_flag,
+                    </if>
+                    <if test="record.no != null">
+                        `no`,
+                    </if>
+                    <if test="record.productSkuId != null">
+                        product_sku_id,
+                    </if>
+                    <if test="record.memberId != null">
+                        member_id,
+                    </if>
+                    <if test="record.status != null">
+                        status,
+                    </if>
+                    <if test="record.memberName != null">
+                        member_name,
+                    </if>
+                    <if test="record.payTime != null">
+                        pay_time,
+                    </if>
+                    <if test="record.payPrice != null">
+                        pay_price,
+                    </if>
+                    <if test="record.orderPrice != null">
+                        order_price,
+                    </if>
+                    <if test="record.physicalFlag != null">
+                        physical_flag,
+                    </if>
+                </trim>
+                <trim prefix="(" suffix=")" suffixOverrides="," />
+            </otherwise>
+        </choose>
+        values
+        <choose>
+            <when test="selective != null and selective.length > 0">
+                <foreach close=")" collection="selective" item="column" open="(" separator=",">
+                    #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+                </foreach>
+            </when>
+            <otherwise>
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    <if test="record.id != null">
+                        #{record.id,jdbcType=BIGINT},
+                    </if>
+                    <if test="record.createTime != null">
+                        #{record.createTime,jdbcType=TIMESTAMP},
+                    </if>
+                    <if test="record.updateTime != null">
+                        #{record.updateTime,jdbcType=TIMESTAMP},
+                    </if>
+                    <if test="record.createBy != null">
+                        #{record.createBy,jdbcType=BIGINT},
+                    </if>
+                    <if test="record.updateBy != null">
+                        #{record.updateBy,jdbcType=BIGINT},
+                    </if>
+                    <if test="record.delFlag != null">
+                        #{record.delFlag,jdbcType=TINYINT},
+                    </if>
+                    <if test="record.no != null">
+                        #{record.no,jdbcType=BIGINT},
+                    </if>
+                    <if test="record.productSkuId != null">
+                        #{record.productSkuId,jdbcType=BIGINT},
+                    </if>
+                    <if test="record.memberId != null">
+                        #{record.memberId,jdbcType=BIGINT},
+                    </if>
+                    <if test="record.status != null">
+                        #{record.status,jdbcType=INTEGER},
+                    </if>
+                    <if test="record.memberName != null">
+                        #{record.memberName,jdbcType=VARCHAR},
+                    </if>
+                    <if test="record.payTime != null">
+                        #{record.payTime,jdbcType=TIMESTAMP},
+                    </if>
+                    <if test="record.payPrice != null">
+                        #{record.payPrice,jdbcType=DECIMAL},
+                    </if>
+                    <if test="record.orderPrice != null">
+                        #{record.orderPrice,jdbcType=DECIMAL},
+                    </if>
+                    <if test="record.physicalFlag != null">
+                        #{record.physicalFlag},
+                    </if>
+                </trim>
+            </otherwise>
+        </choose>
+    </insert>
+
+    <select id="selectByOrderNo" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from `order`
+        where `no` = #{orderNo,jdbcType=BIGINT}
+    </select>
+
+    <select id="getOrderStatusByOrderNo" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        select
+        `status`
+        from `order`
+        where `no` = #{orderNo,jdbcType=BIGINT}
+    </select>
+
+    <select id="countThirdOrderNo" resultType="java.lang.Integer">
+        select count(*)
+        from `order`
+        where third_order_no = #{thirdOrderNo}
+    </select>
+</mapper>

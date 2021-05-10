@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.order.OrderPhysicalDetailMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.entity.order.OrderPhysicalDetail">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="address_province_code" jdbcType="VARCHAR" property="addressProvinceCode" />
+    <result column="address_province_name" jdbcType="VARCHAR" property="addressProvinceName" />
+    <result column="address_city_code" jdbcType="VARCHAR" property="addressCityCode" />
+    <result column="address_city_name" jdbcType="VARCHAR" property="addressCityName" />
+    <result column="address_area_code" jdbcType="VARCHAR" property="addressAreaCode" />
+    <result column="address_area_name" jdbcType="VARCHAR" property="addressAreaName" />
+    <result column="address_detail" jdbcType="VARCHAR" property="addressDetail" />
+    <result column="recipient_name" jdbcType="VARCHAR" property="recipientName" />
+    <result column="recipient_phone" jdbcType="VARCHAR" property="recipientPhone" />
+    <result column="logistics_type" jdbcType="INTEGER" property="logisticsType" />
+    <result column="logistics_no" jdbcType="VARCHAR" property="logisticsNo" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+    <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, order_id, address_province_code, address_province_name, address_city_code, address_city_name, 
+    address_area_code, address_area_name, address_detail, recipient_name, recipient_phone, 
+    logistics_type, logistics_no, create_time, update_time, create_by, update_by, del_flag
+  </sql>
+  <select id="selectByExample" parameterType="com.qidao.application.entity.order.OrderPhysicalDetailExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from order_physical_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="rows != null">
+      <if test="offset != null">
+        limit ${offset}, ${rows}
+      </if>
+      <if test="offset == null">
+        limit ${rows}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from order_physical_detail
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from order_physical_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.qidao.application.entity.order.OrderPhysicalDetailExample">
+    delete from order_physical_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.qidao.application.entity.order.OrderPhysicalDetail">
+    insert into order_physical_detail (id, order_id, address_province_code, 
+      address_province_name, address_city_code, address_city_name, 
+      address_area_code, address_area_name, address_detail, 
+      recipient_name, recipient_phone, logistics_type, 
+      logistics_no, create_time, update_time, 
+      create_by, update_by, del_flag
+      )
+    values (#{id,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, #{addressProvinceCode,jdbcType=VARCHAR}, 
+      #{addressProvinceName,jdbcType=VARCHAR}, #{addressCityCode,jdbcType=VARCHAR}, #{addressCityName,jdbcType=VARCHAR}, 
+      #{addressAreaCode,jdbcType=VARCHAR}, #{addressAreaName,jdbcType=VARCHAR}, #{addressDetail,jdbcType=VARCHAR}, 
+      #{recipientName,jdbcType=VARCHAR}, #{recipientPhone,jdbcType=VARCHAR}, #{logisticsType,jdbcType=INTEGER}, 
+      #{logisticsNo,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=BIGINT}, #{updateBy,jdbcType=BIGINT}, #{delFlag,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="map">
+    insert into order_physical_detail
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          ${column.escapedColumnName}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            id,
+          </if>
+          <if test="record.orderId != null">
+            order_id,
+          </if>
+          <if test="record.addressProvinceCode != null">
+            address_province_code,
+          </if>
+          <if test="record.addressProvinceName != null">
+            address_province_name,
+          </if>
+          <if test="record.addressCityCode != null">
+            address_city_code,
+          </if>
+          <if test="record.addressCityName != null">
+            address_city_name,
+          </if>
+          <if test="record.addressAreaCode != null">
+            address_area_code,
+          </if>
+          <if test="record.addressAreaName != null">
+            address_area_name,
+          </if>
+          <if test="record.addressDetail != null">
+            address_detail,
+          </if>
+          <if test="record.recipientName != null">
+            recipient_name,
+          </if>
+          <if test="record.recipientPhone != null">
+            recipient_phone,
+          </if>
+          <if test="record.logisticsType != null">
+            logistics_type,
+          </if>
+          <if test="record.logisticsNo != null">
+            logistics_no,
+          </if>
+          <if test="record.createTime != null">
+            create_time,
+          </if>
+          <if test="record.updateTime != null">
+            update_time,
+          </if>
+          <if test="record.createBy != null">
+            create_by,
+          </if>
+          <if test="record.updateBy != null">
+            update_by,
+          </if>
+          <if test="record.delFlag != null">
+            del_flag,
+          </if>
+        </trim>
+        <trim prefix="(" suffix=")" suffixOverrides="," />
+      </otherwise>
+    </choose>
+    values
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.orderId != null">
+            #{record.orderId,jdbcType=BIGINT},
+          </if>
+          <if test="record.addressProvinceCode != null">
+            #{record.addressProvinceCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressProvinceName != null">
+            #{record.addressProvinceName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressCityCode != null">
+            #{record.addressCityCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressCityName != null">
+            #{record.addressCityName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressAreaCode != null">
+            #{record.addressAreaCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressAreaName != null">
+            #{record.addressAreaName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressDetail != null">
+            #{record.addressDetail,jdbcType=VARCHAR},
+          </if>
+          <if test="record.recipientName != null">
+            #{record.recipientName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.recipientPhone != null">
+            #{record.recipientPhone,jdbcType=VARCHAR},
+          </if>
+          <if test="record.logisticsType != null">
+            #{record.logisticsType,jdbcType=INTEGER},
+          </if>
+          <if test="record.logisticsNo != null">
+            #{record.logisticsNo,jdbcType=VARCHAR},
+          </if>
+          <if test="record.createTime != null">
+            #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            #{record.delFlag,jdbcType=TINYINT},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+  </insert>
+  <select id="countByExample" parameterType="com.qidao.application.entity.order.OrderPhysicalDetailExample" resultType="java.lang.Long">
+    select count(*) from order_physical_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update order_physical_detail
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.id != null">
+            id = #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.orderId != null">
+            order_id = #{record.orderId,jdbcType=BIGINT},
+          </if>
+          <if test="record.addressProvinceCode != null">
+            address_province_code = #{record.addressProvinceCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressProvinceName != null">
+            address_province_name = #{record.addressProvinceName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressCityCode != null">
+            address_city_code = #{record.addressCityCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressCityName != null">
+            address_city_name = #{record.addressCityName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressAreaCode != null">
+            address_area_code = #{record.addressAreaCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressAreaName != null">
+            address_area_name = #{record.addressAreaName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressDetail != null">
+            address_detail = #{record.addressDetail,jdbcType=VARCHAR},
+          </if>
+          <if test="record.recipientName != null">
+            recipient_name = #{record.recipientName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.recipientPhone != null">
+            recipient_phone = #{record.recipientPhone,jdbcType=VARCHAR},
+          </if>
+          <if test="record.logisticsType != null">
+            logistics_type = #{record.logisticsType,jdbcType=INTEGER},
+          </if>
+          <if test="record.logisticsNo != null">
+            logistics_no = #{record.logisticsNo,jdbcType=VARCHAR},
+          </if>
+          <if test="record.createTime != null">
+            create_time = #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            create_by = #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            update_by = #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update order_physical_detail
+    set id = #{record.id,jdbcType=BIGINT},
+      order_id = #{record.orderId,jdbcType=BIGINT},
+      address_province_code = #{record.addressProvinceCode,jdbcType=VARCHAR},
+      address_province_name = #{record.addressProvinceName,jdbcType=VARCHAR},
+      address_city_code = #{record.addressCityCode,jdbcType=VARCHAR},
+      address_city_name = #{record.addressCityName,jdbcType=VARCHAR},
+      address_area_code = #{record.addressAreaCode,jdbcType=VARCHAR},
+      address_area_name = #{record.addressAreaName,jdbcType=VARCHAR},
+      address_detail = #{record.addressDetail,jdbcType=VARCHAR},
+      recipient_name = #{record.recipientName,jdbcType=VARCHAR},
+      recipient_phone = #{record.recipientPhone,jdbcType=VARCHAR},
+      logistics_type = #{record.logisticsType,jdbcType=INTEGER},
+      logistics_no = #{record.logisticsNo,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      create_by = #{record.createBy,jdbcType=BIGINT},
+      update_by = #{record.updateBy,jdbcType=BIGINT},
+      del_flag = #{record.delFlag,jdbcType=TINYINT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="map">
+    update order_physical_detail
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.orderId != null">
+            order_id = #{record.orderId,jdbcType=BIGINT},
+          </if>
+          <if test="record.addressProvinceCode != null">
+            address_province_code = #{record.addressProvinceCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressProvinceName != null">
+            address_province_name = #{record.addressProvinceName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressCityCode != null">
+            address_city_code = #{record.addressCityCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressCityName != null">
+            address_city_name = #{record.addressCityName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressAreaCode != null">
+            address_area_code = #{record.addressAreaCode,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressAreaName != null">
+            address_area_name = #{record.addressAreaName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.addressDetail != null">
+            address_detail = #{record.addressDetail,jdbcType=VARCHAR},
+          </if>
+          <if test="record.recipientName != null">
+            recipient_name = #{record.recipientName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.recipientPhone != null">
+            recipient_phone = #{record.recipientPhone,jdbcType=VARCHAR},
+          </if>
+          <if test="record.logisticsType != null">
+            logistics_type = #{record.logisticsType,jdbcType=INTEGER},
+          </if>
+          <if test="record.logisticsNo != null">
+            logistics_no = #{record.logisticsNo,jdbcType=VARCHAR},
+          </if>
+          <if test="record.createTime != null">
+            create_time = #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            create_by = #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            update_by = #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    where id = #{record.id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qidao.application.entity.order.OrderPhysicalDetail">
+    update order_physical_detail
+    set order_id = #{orderId,jdbcType=BIGINT},
+      address_province_code = #{addressProvinceCode,jdbcType=VARCHAR},
+      address_province_name = #{addressProvinceName,jdbcType=VARCHAR},
+      address_city_code = #{addressCityCode,jdbcType=VARCHAR},
+      address_city_name = #{addressCityName,jdbcType=VARCHAR},
+      address_area_code = #{addressAreaCode,jdbcType=VARCHAR},
+      address_area_name = #{addressAreaName,jdbcType=VARCHAR},
+      address_detail = #{addressDetail,jdbcType=VARCHAR},
+      recipient_name = #{recipientName,jdbcType=VARCHAR},
+      recipient_phone = #{recipientPhone,jdbcType=VARCHAR},
+      logistics_type = #{logisticsType,jdbcType=INTEGER},
+      logistics_no = #{logisticsNo,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=BIGINT},
+      update_by = #{updateBy,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectOneByExample" parameterType="com.qidao.application.entity.order.OrderPhysicalDetailExample" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from order_physical_detail
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+  <insert id="batchInsert" parameterType="map">
+    insert into order_physical_detail
+    (id, order_id, address_province_code, address_province_name, address_city_code, address_city_name, 
+      address_area_code, address_area_name, address_detail, recipient_name, recipient_phone, 
+      logistics_type, logistics_no, create_time, update_time, create_by, update_by, del_flag
+      )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.orderId,jdbcType=BIGINT}, #{item.addressProvinceCode,jdbcType=VARCHAR}, 
+        #{item.addressProvinceName,jdbcType=VARCHAR}, #{item.addressCityCode,jdbcType=VARCHAR}, 
+        #{item.addressCityName,jdbcType=VARCHAR}, #{item.addressAreaCode,jdbcType=VARCHAR}, 
+        #{item.addressAreaName,jdbcType=VARCHAR}, #{item.addressDetail,jdbcType=VARCHAR}, 
+        #{item.recipientName,jdbcType=VARCHAR}, #{item.recipientPhone,jdbcType=VARCHAR}, 
+        #{item.logisticsType,jdbcType=INTEGER}, #{item.logisticsNo,jdbcType=VARCHAR}, #{item.createTime,jdbcType=TIMESTAMP}, 
+        #{item.updateTime,jdbcType=TIMESTAMP}, #{item.createBy,jdbcType=BIGINT}, #{item.updateBy,jdbcType=BIGINT}, 
+        #{item.delFlag,jdbcType=TINYINT})
+    </foreach>
+  </insert>
+  <insert id="batchInsertSelective" parameterType="map">
+    insert into order_physical_detail (
+    <foreach collection="selective" item="column" separator=",">
+      ${column.escapedColumnName}
+    </foreach>
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (
+      <foreach collection="selective" item="column" separator=",">
+        <if test="'id'.toString() == column.value">
+          #{item.id,jdbcType=BIGINT}
+        </if>
+        <if test="'order_id'.toString() == column.value">
+          #{item.orderId,jdbcType=BIGINT}
+        </if>
+        <if test="'address_province_code'.toString() == column.value">
+          #{item.addressProvinceCode,jdbcType=VARCHAR}
+        </if>
+        <if test="'address_province_name'.toString() == column.value">
+          #{item.addressProvinceName,jdbcType=VARCHAR}
+        </if>
+        <if test="'address_city_code'.toString() == column.value">
+          #{item.addressCityCode,jdbcType=VARCHAR}
+        </if>
+        <if test="'address_city_name'.toString() == column.value">
+          #{item.addressCityName,jdbcType=VARCHAR}
+        </if>
+        <if test="'address_area_code'.toString() == column.value">
+          #{item.addressAreaCode,jdbcType=VARCHAR}
+        </if>
+        <if test="'address_area_name'.toString() == column.value">
+          #{item.addressAreaName,jdbcType=VARCHAR}
+        </if>
+        <if test="'address_detail'.toString() == column.value">
+          #{item.addressDetail,jdbcType=VARCHAR}
+        </if>
+        <if test="'recipient_name'.toString() == column.value">
+          #{item.recipientName,jdbcType=VARCHAR}
+        </if>
+        <if test="'recipient_phone'.toString() == column.value">
+          #{item.recipientPhone,jdbcType=VARCHAR}
+        </if>
+        <if test="'logistics_type'.toString() == column.value">
+          #{item.logisticsType,jdbcType=INTEGER}
+        </if>
+        <if test="'logistics_no'.toString() == column.value">
+          #{item.logisticsNo,jdbcType=VARCHAR}
+        </if>
+        <if test="'create_time'.toString() == column.value">
+          #{item.createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'update_time'.toString() == column.value">
+          #{item.updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'create_by'.toString() == column.value">
+          #{item.createBy,jdbcType=BIGINT}
+        </if>
+        <if test="'update_by'.toString() == column.value">
+          #{item.updateBy,jdbcType=BIGINT}
+        </if>
+        <if test="'del_flag'.toString() == column.value">
+          #{item.delFlag,jdbcType=TINYINT}
+        </if>
+      </foreach>
+      )
+    </foreach>
+  </insert>
+</mapper>

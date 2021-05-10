@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.advertise.CustomAdvertiseMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.entity.advertise.Advertise">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="location" jdbcType="BIGINT" property="location" />
+    <result column="sequence" jdbcType="INTEGER" property="sequence" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="link_url" jdbcType="VARCHAR" property="linkUrl" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+    <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+  </resultMap>
+
+    <resultMap id="AdvertisePageRepMap" type="com.qidao.application.vo.AdvertisePageRep">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="location" jdbcType="BIGINT" property="location" />
+        <result column="channel_id" jdbcType="BIGINT" property="channelId" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="img" jdbcType="VARCHAR" property="img" />
+        <result column="link_url" jdbcType="VARCHAR" property="linkUrl" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+    </resultMap>
+
+    <resultMap id="AdvertiseCanalChannelMap" type="com.qidao.application.vo.AdvertiseCanalChannel">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="location" jdbcType="BIGINT" property="location" />
+        <result column="link_url" jdbcType="VARCHAR" property="linkUrl" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="img" jdbcType="VARCHAR" property="img" />
+        <result column="channel_id" jdbcType="BIGINT" property="channelId" />
+        <result column="canal_id" jdbcType="BIGINT" property="canalId" />
+    </resultMap>
+
+    <select id="findAdvertiseByList" resultMap="BaseResultMap">
+            SELECT
+          adv.id,
+          adv.title,
+          adv.location,
+          adv.link_url,
+          adv.begin_time,
+          adv.end_time,
+           adv.status,
+          adv.sequence
+      FROM
+          advertise adv
+      LEFT JOIN select_config sc ON adv.location = sc.id
+      AND sc.del_flag = 0
+      LEFT JOIN link_advertise_canal lac ON lac.advertise_id = adv.id
+      LEFT JOIN canal cl ON lac.canal_id = cl.id
+      WHERE
+          adv.del_flag = 0  and lac.del_flag = 0  and adv.location = #{location} and lac.canal_id  =#{cancal}
+    </select>
+
+    <select id="getList" resultMap="AdvertisePageRepMap">
+        SELECT
+            adv.id,
+            adv.title,
+            adv.location,
+            adv.link_url,
+            adv.sequence,
+            adv.type,
+            adv.img,
+        ldc.channel_id
+        FROM
+            advertise adv
+                LEFT JOIN select_config sc ON adv.location = sc.id
+                LEFT JOIN link_dynamic_channel ldc ON ldc.dynamic_id = adv.id
+        WHERE
+            adv.del_flag = 0   and adv.location = #{location}
+          and adv.end_time >= now() and adv.status = 0
+        <if test="channelIdList != null and channelIdList.size > 0">
+            and ldc.channel_id in
+            <foreach close=")" collection="channelIdList" item="item" open="(" separator=",">
+                ${item}
+            </foreach>
+        </if>
+
+       order by adv.sequence desc
+
+    </select>
+
+
+    <select id = "getAdvertiseByCanalAndChannel" resultMap="AdvertiseCanalChannelMap">
+        SELECT
+        a.id,
+        a.title,
+        a.location,
+        a.link_url,
+        a.begin_time,
+        a.end_time,
+        a.status,
+        a.sequence,
+        ldc.channel_id,
+        lac.canal_id
+        FROM advertise a
+        LEFT JOIN link_advertise_canal lac ON a.id = lac.advertise_id
+        LEFT JOIN canal ON lac.canal_id = canal.id
+        LEFT JOIN link_dynamic_channel ldc ON a.id = ldc.dynamic_id
+        LEFT JOIN channel ON  ldc.channel_id= channel.id
+        WHERE ldc.type='1'
+        AND
+        <if test="canalId != null">
+            canal.id = #{canalId}
+        </if>
+        AND
+        <if test="channelId != null">
+            channel.id = #{channelId}
+        </if>
+        ORDER BY a.sequence DESC
+    </select>
+</mapper>

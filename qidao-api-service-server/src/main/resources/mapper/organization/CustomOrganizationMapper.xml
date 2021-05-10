@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.organization.CustomOrganizationMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.entity.organization.Organization">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+        <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="responsible_member_id" jdbcType="BIGINT" property="responsibleMemberId" />
+        <result column="backend_image" jdbcType="VARCHAR" property="backendImage" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="summary" jdbcType="VARCHAR" property="summary" />
+        <result column="industry_id" jdbcType="BIGINT" property="industryId" />
+        <result column="industry_remark" jdbcType="VARCHAR" property="industryRemark" />
+        <result column="funds_id" jdbcType="VARCHAR" property="fundsId" />
+        <result column="scale_id" jdbcType="BIGINT" property="scaleId" />
+        <result column="sign_time" jdbcType="TIMESTAMP" property="signTime" />
+        <result column="license" jdbcType="VARCHAR" property="license" />
+        <result column="qualifications" jdbcType="VARCHAR" property="qualifications" />
+        <result column="address_province_id" jdbcType="VARCHAR" property="addressProvinceId" />
+        <result column="address_province_name" jdbcType="VARCHAR" property="addressProvinceName" />
+        <result column="address_city_id" jdbcType="VARCHAR" property="addressCityId" />
+        <result column="address_city_name" jdbcType="VARCHAR" property="addressCityName" />
+        <result column="address_area_id" jdbcType="VARCHAR" property="addressAreaId" />
+        <result column="address_area_name" jdbcType="VARCHAR" property="addressAreaName" />
+        <result column="address_detail" jdbcType="VARCHAR" property="addressDetail" />
+        <result column="tech_scale_id" jdbcType="BIGINT" property="techScaleId" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="vip_start_time" jdbcType="TIMESTAMP" property="vipStartTime" />
+        <result column="vip_end_time" jdbcType="TIMESTAMP" property="vipEndTime" />
+        <result column="verify_status" jdbcType="INTEGER" property="verifyStatus" />
+        <result column="verify_reason" jdbcType="VARCHAR" property="verifyReason" />
+        <result column="belong" jdbcType="VARCHAR" property="belong" />
+    </resultMap>
+
+    <resultMap id="BaseResultOrganizationMap" type="com.qidao.application.vo.OrganizationBaseDataRep">
+    </resultMap>
+
+    <resultMap id="QueryOrganizationType" type="com.qidao.application.entity.organization.MemberOrganizationTypeDO">
+        <result column="member_id" jdbcType="VARCHAR" property="memberId" />
+        <result column="head_image" jdbcType="VARCHAR" property="headImage" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="im_easemob_username" jdbcType="VARCHAR" property="imEasemobUsername" />
+        <result column="organization_id" jdbcType="VARCHAR" property="organizationId" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+    </resultMap>
+
+  <insert id="insert" parameterType="com.qidao.application.entity.organization.Organization">
+    insert into organization (id, create_time, update_time,
+      create_by, update_by, del_flag,
+      type, responsible_member_id, backend_image,
+      name, summary, industry_id,
+      industry_remark, funds_id, scale_id,
+      sign_time, license, qualifications,
+      address_province_id, address_province_name,
+      address_city_id, address_city_name, address_area_id,
+      address_area_name, address_detail, tech_scale_id,
+      status, vip_start_time, vip_end_time,
+      verify_status, verify_reason, belong,
+      salesman_id)
+    values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+      #{createBy,jdbcType=BIGINT}, #{updateBy,jdbcType=BIGINT}, #{delFlag,jdbcType=TINYINT},
+      #{type,jdbcType=INTEGER}, #{responsibleMemberId,jdbcType=BIGINT}, #{backendImage,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{summary,jdbcType=VARCHAR}, #{industryId,jdbcType=BIGINT},
+      #{industryRemark,jdbcType=VARCHAR}, #{fundsId,jdbcType=VARCHAR}, #{scaleId,jdbcType=BIGINT},
+      #{signTime,jdbcType=TIMESTAMP}, #{license,jdbcType=VARCHAR}, #{qualifications,jdbcType=VARCHAR},
+      #{addressProvinceId,jdbcType=VARCHAR}, #{addressProvinceName,jdbcType=VARCHAR},
+      #{addressCityId,jdbcType=VARCHAR}, #{addressCityName,jdbcType=VARCHAR}, #{addressAreaId,jdbcType=VARCHAR},
+      #{addressAreaName,jdbcType=VARCHAR}, #{addressDetail,jdbcType=VARCHAR}, #{techScaleId,jdbcType=BIGINT},
+      #{status,jdbcType=INTEGER}, #{vipStartTime,jdbcType=TIMESTAMP}, #{vipEndTime,jdbcType=TIMESTAMP},
+      #{verifyStatus,jdbcType=INTEGER}, #{verifyReason,jdbcType=VARCHAR}, #{belong,jdbcType=VARCHAR},
+      #{salesmanId,jdbcType=BIGINT})
+  </insert>
+
+  <select id="findByName"   resultType="com.qidao.application.entity.organization.Organization">
+
+    SELECT * FROM  organization o where o.name =#{name,jdbcType=VARCHAR} and
+    o.type=#{type,jdbcType=INTEGER}
+    and o.belong=#{belong,jdbcType=VARCHAR}
+
+  </select>
+
+  <select id="listByIds" resultMap="BaseResultMap">
+      SELECT organization.id , organization.name
+      FROM
+           organization
+      WHERE
+            organization.id IN
+      <foreach item="organizationId" collection="organizationIds" open="(" separator="," close=")">
+          #{organizationId}
+      </foreach>
+      AND organization.del_flag = #{delFlag,jdbcType=TINYINT}
+  </select>
+    <select id="getOrganizationType" resultType="java.lang.Integer">
+        select org.type
+        from `organization` org
+                 left join `member` m on org.id = m.organization_id and m.del_flag = 0
+        where m.id = #{memberId} and org.del_flag = 0
+    </select>
+
+
+    <select id="findOrganizationData" resultMap="BaseResultOrganizationMap">
+               SELECT
+            o.id,
+            o.belong,
+            o.`name`,
+            o.scale_id as scaleId,
+            b.val
+        FROM
+            organization o
+        left JOIN link_label lb ON lb.source_id = o.id
+        left JOIN label b ON b.id = lb.label_id
+        WHERE
+            o.del_flag = 0
+        AND lb.del_flag = 0
+        AND b.del_flag = 0
+        AND o.id = #{organizationId}
+        AND lb.type = 4
+    </select>
+
+    <select id="queryOrganizationType" resultMap="QueryOrganizationType">
+        SELECT m.id member_id,m.head_image,m.`name`,m.im_easemob_username,o.id organization_id,o.type
+        from member m
+                 left JOIN organization o ON m.organization_id = o.id
+        where m.id in
+        <foreach collection="memberIds" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <select id="findOrganizationDetail"
+            resultType="com.qidao.application.entity.organization.OrganizationDetail">
+        SELECT
+            o.`name`,
+            o.belong,
+            o.summary,
+            o.license,
+            o.`status`,
+            o.vip_start_time AS vipStartTime,
+            o.vip_end_time AS vipEndTime,
+            o.sign_time AS signTime,
+            o.address_detail AS addressDetail,
+            o.address_province_name AS provinceName,
+            o.address_city_name AS cityName,
+            o.address_area_name AS areaName,
+            o.industry_remark industryRemark,
+            o.backend_image backendImage,
+            s.val scaleName,
+               s.id scaleId,
+            GROUP_CONCAT(DISTINCT l.val) label,
+            GROUP_CONCAT(DISTINCT sc.val) industry
+        FROM `organization` o
+                 LEFT JOIN `link_label` ll ON o.id = ll.source_id AND ll.type = 4 AND ll.del_flag = 0
+                 LEFT JOIN `label` l ON ll.label_id = l.id
+                 LEFT JOIN `link_select` ls ON o.id = ls.source_id AND ls.type = 6 AND ls.del_flag = 0
+                 LEFT JOIN `select_config` sc ON ls.select_config_id = sc.id
+                 LEFT JOIN `select_config` s ON o.scale_id = s.id
+        WHERE o.id = #{id} AND o.del_flag = 0
+    </select>
+</mapper>

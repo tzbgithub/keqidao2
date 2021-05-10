@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qidao.application.mapper.dynamic.CustomDynamicMapper">
+    <select id="getTypeByMemberId" resultType="java.lang.Integer" parameterType="java.lang.Long">
+        SELECT COUNT(0)
+        from member a
+                 left join organization b on a.organization_id = b.id and b.type = 0
+        where a.id = #{memberId}
+          and a.del_flag = 0
+          and b.del_flag = 0
+    </select>
+
+    <resultMap id="getDynamicDetailedMap" type="com.qidao.application.entity.dynamic.DynamicDetailed">
+        <id column="dynamicId" property="dynamicId"/>
+        <result column="title" property="title"/>
+        <result column="commentNum" property="commentNum"/>
+        <result column="likeNum" property="likeNum"/>
+        <result column="img" property="img"/>
+        <result column="video" property="video"/>
+        <result column="content" property="content"/>
+        <result column="url" property="url"/>
+        <result column="organizationName" property="organizationName"/>
+        <result column="name" property="name"/>
+        <result column="pushTime" property="pushTime"/>
+        <result column="needVip" property="needVip"/>
+        <result column="belong" property="belong"/>
+        <result column="headImage" property="headImage"/>
+        <result column="publisherId" property="publisherId"/>
+        <result column="position" property="position"/>
+        <result column="technologyMaturity" property="technologyMaturity"/>
+        <result column="cooperationType" property="cooperationType"/>
+        <result column="education" property="education"/>
+        <result column="type" property="type"/>
+        <result column="thumb" property="thumb"/>
+        <result column="labelIds" property="labelIds"/>
+        <result column="labelVals" property="labelVals"/>
+        <result column="selectConfigIds" property="selectConfigIds"/>
+        <result column="article" property="article"/>
+    </resultMap>
+    <select id="getDynamicDetailed" resultMap="getDynamicDetailedMap">
+        select a.id           dynamicId,
+               a.comment_num  commentNum,
+               a.content,
+               a.like_num     likeNum,
+               a.publish_time pushTime,
+               a.title,
+               a.thumb,
+               a.type,
+               a.url,
+               a.img,
+               a.video,
+               a.member_id           publisherId,
+               b.belong,
+               b.head_image   headImage,
+               b.`name`,
+               a.need_vip     needVip,
+               c.val position,
+               edu.val education,
+            d.`name` organizationName,
+            group_concat(ll.label_id)  labelIds,
+            tm.val technologyMaturity,
+            ct.val cooperationType,
+            group_concat(la.val) labelVals
+        from `dynamic` a
+            left join `member` b
+        on a.member_id = b.id
+            left join `select_config` c on b.position_id = c.id and c.del_flag = 0 and c.`status` = 0
+            left join `select_config` edu on b.education_id = edu.id and edu.del_flag = 0 and edu.`status` = 0
+            left join `organization` d on b.organization_id = d.id and d.del_flag = 0
+            left join `link_label` ll on a.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            left join `label` la on ll.label_id = la.id and la.del_flag = 0
+            left join `select_config` tm on a.technology_maturity = tm.id and tm.del_flag = 0 and tm.`status` = 0
+            left join `select_config` ct on a.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        where a.id = #{dynamicId} and a.del_flag = 0 and b.del_flag = 0
+    </select>
+
+    <resultMap id="getMyCommentMap" type="com.qidao.application.entity.dynamic.MyComment">
+        <id column="commentId" property="commentId"/>
+        <result column="commentContent" property="commentContent"/>
+        <result column="title" property="title"/>
+        <result column="commentNum" property="commentNum"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="likeNum" property="likeNum"/>
+        <result column="dynamicContent" property="dynamicContent"/>
+        <result column="dynamicId" property="dynamicId"/>
+        <result column="img" property="img"/>
+        <result column="video" property="video"/>
+        <result column="thumb" property="thumb"/>
+        <result column="summary" property="summary"/>
+        <result column="url" property="url"/>
+        <result column="organizationName" property="organizationName"/>
+        <result column="name" property="name"/>
+        <result column="belong" property="belong"/>
+        <result column="headImage" property="headImage"/>
+        <result column="publisherId" property="publisherId"/>
+        <result column="education" property="education"/>
+        <result column="position" property="position"/>
+        <result column="type" property="type"/>
+        <result column="labelIds" property="labelIds"/>
+        <result column="labelVals" property="labelVals"/>
+        <result column="cooperationType" property="cooperationType"/>
+    </resultMap>
+    <select id="getMyComment" resultType="com.qidao.application.entity.dynamic.MyComment" resultMap="getMyCommentMap">
+        SELECT co.id           commentId,
+               co.content      commentContent,
+               dy.title,
+               dy.comment_num  commentNum,
+               dy.like_num     likeNum,
+               dy.publish_time publishTime,
+               dy.content      dynamicContent,
+               dy.id           dynamicId,
+               dy.img,
+               dy.video,
+               dy.thumb,
+               dy.type,
+               dy.summary,
+               dy.url,
+               org.`name`      organizationName,
+               me.`name`,
+               me.belong,
+               me.head_image   headImage,
+               dy.member_id           publisherId,
+               sel.val position,
+               edu.val education,
+               ct.val cooperationType,
+        group_concat(ll.label_id) labelIds,
+        group_concat(la.val) labelVals
+        FROM `comment` co
+            left join `dynamic` dy
+        on co.dynamic_id = dy.id
+            left join `member` me on dy.member_id = me.id
+            left join `organization` org on me.organization_id = org.id and org.del_flag = 0
+            left join `select_config` sel on me.position_id = sel.id and sel.del_flag = 0 and sel.`status` = 0
+            left join `select_config` edu on me.education_id = edu.id and edu.del_flag = 0 and edu.`status` = 0
+            left join `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            left join `label` la on ll.label_id = la.id and la.del_flag = 0
+            left join `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        where co.member_id = #{memberId} and co.del_flag = 0 and dy.del_flag = 0 and dy.verify_status = 3 and me.del_flag = 0
+group by co.id
+order by co.create_time desc
+    </select>
+
+    <resultMap id="getMyAgreeMap" type="com.qidao.application.entity.dynamic.MyAgree">
+        <id column="dynamicId" property="dynamicId"/>
+        <result column="title" property="title"/>
+        <result column="commentNum" property="commentNum"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="likeNum" property="likeNum"/>
+        <result column="dynamicContent" property="dynamicContent"/>
+        <result column="dynamicId" property="dynamicId"/>
+        <result column="img" property="img"/>
+        <result column="video" property="video"/>
+        <result column="thumb" property="thumb"/>
+        <result column="summary" property="summary"/>
+        <result column="url" property="url"/>
+        <result column="organizationName" property="organizationName"/>
+        <result column="name" property="name"/>
+        <result column="belong" property="belong"/>
+        <result column="headImage" property="headImage"/>
+        <result column="publisherId" property="publisherId"/>
+        <result column="education" property="education"/>
+        <result column="position" property="position"/>
+        <result column="type" property="type"/>
+        <result column="labelIds" property="labelIds"/>
+        <result column="labelVals" property="labelVals"/>
+        <result column="cooperationType" property="cooperationType"/>
+    </resultMap>
+    <select id="getMyAgree" resultMap="getMyAgreeMap">
+        SELECT dy.title , dy.comment_num commentNum, dy.like_num likeNum , dy.publish_time publishTime,dy.content dynamicContent,dy.id dynamicId,
+               dy.img , dy.type , dy.video , dy.thumb , dy.summary , dy.url,
+               me.`name` , me.belong , me.head_image headImage , dy.member_id publisherId,
+               sel.val position,
+               edu.val education,
+               ct.val cooperationType,
+			   org.`name` organizationName,
+               group_concat(ll.label_id) labelIds,
+               group_concat(la.val) labelVals
+        FROM `dynamic` dy
+            left join `member` me on dy.member_id = me.id
+            left join `organization` org on me.organization_id = org.id and org.del_flag = 0
+            left join `select_config` sel on me.position_id = sel.id and sel.del_flag = 0 and sel.`status` = 0
+            left join `select_config` edu on me.education_id = edu.id and edu.del_flag = 0 and edu.`status` = 0
+            left join `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            left join `label` la on ll.label_id = la.id and la.del_flag = 0
+            left join `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        where dy.id in (SELECT source_id FROM log_behave_dynamic where member_id = #{memberId} and `type` = 0 and del_flag = 0) and dy.verify_status = 3
+        and dy.del_flag = 0 and me.del_flag = 0
+        group by dynamicId
+        order by dy.create_time desc
+    </select>
+
+    <resultMap id="dynamicRecommendCacheMap" type="com.qidao.application.entity.dynamic.DynamicRecommendCacheDO">
+        <result column="dynamic_id" property="dynamicId"/>
+        <result column="push_member_id" property="pushMemberId"/>
+        <result column="technology_maturity_id" property="technologyMaturityId"/>
+        <result column="industry_id_second" property="industryIdSecond"/>
+        <result column="day_diff" property="dayDiff"/>
+        <result column="labels" property="labels"/>
+    </resultMap>
+
+    <resultMap id="getDynamicFollowMap" type="com.qidao.application.entity.dynamic.DynamicFollow">
+        <id column="dynamicId" property="dynamicId"/>
+        <result column="title" property="title"/>
+        <result column="commentNum" property="commentNum"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="verifyStatus" property="verifyStatus"/>
+        <result column="likeNum" property="likeNum"/>
+        <result column="dynamicContent" property="dynamicContent"/>
+        <result column="dynamicId" property="dynamicId"/>
+        <result column="img" property="img"/>
+        <result column="video" property="video"/>
+        <result column="thumb" property="thumb"/>
+        <result column="summary" property="summary"/>
+        <result column="url" property="url"/>
+        <result column="organizationName" property="organizationName"/>
+        <result column="name" property="name"/>
+        <result column="belong" property="belong"/>
+        <result column="headImage" property="headImage"/>
+        <result column="publisherId" property="publisherId"/>
+        <result column="position" property="position"/>
+        <result column="education" property="education"/>
+        <result column="type" property="type"/>
+        <result column="labelIds" property="labelIds"/>
+        <result column="labelVals" property="labelVals"/>
+        <result column="cooperationType" property="cooperationType"/>
+        <association property="assistant" javaType="com.qidao.application.entity.member.AssistantInfo">
+            <id property="id" column="assistantId" />
+            <result column="assistantName" property="name"/>
+            <result column="assistantHeadImage" property="headImg"/>
+        </association>
+    </resultMap>
+    <select id="getDynamicFollow" resultMap="getDynamicFollowMap">
+        SELECT dy.title,
+               dy.comment_num  commentNum,
+               dy.like_num     likeNum,
+               dy.publish_time publishTime,
+               dy.content      dynamicContent,
+               dy.id           dynamicId,
+               dy.type,
+               dy.video,
+               dy.thumb,
+               dy.url,
+               dy.img,
+               org.`name`      organizationName,
+               me.`name`,
+               me.belong,
+               me.head_image   headImage,
+               dy.member_id           publisherId,
+               sel.val position,
+               edu.val education,
+               ct.val cooperationType,
+               group_concat(ll.label_id) labelIds,
+               group_concat(la.val) labelVals, dy.summary
+        FROM `dynamic` dy
+            LEFT JOIN `member` me
+        on dy.member_id = me.id
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            left join `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            left join `label` la on ll.label_id = la.id and la.del_flag = 0
+            left join `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        where dy.del_flag = 0 and dy.verify_status = 3 and me.del_flag = 0  and dy.member_id in (
+            SELECT `subscribe_id` from subscribe where member_id =#{memberId}  and type = 0 and del_flag = 0 and subscribe_type = 0
+            )
+        group by dynamicId
+        order by dy.create_time desc
+    </select>
+    <select id="getDynamicPage" resultMap="getDynamicFollowMap">
+        SELECT dy.title ,
+               dy.comment_num commentNum,
+               dy.like_num likeNum ,
+               dy.publish_time publishTime,
+               dy.content dynamicContent,
+               dy.id dynamicId,
+               dy.img,
+               dy.url,
+               dy.thumb,
+               dy.type,
+               dy.video,
+               org.`name` organizationName ,
+               me.`name` ,
+               me.belong ,
+               me.head_image headImage ,
+               dy.member_id publisherId,
+               sel.val position,
+               edu.val education,
+               ct.val cooperationType,
+               group_concat(DISTINCT ll.label_id) labelIds,
+               group_concat(DISTINCT la.val) labelVals
+        FROM `dynamic` dy
+            LEFT JOIN `member` me on dy.member_id = me.id
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            LEFT JOIN `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            LEFT JOIN `label` la on ll.label_id = la.id and la.del_flag = 0
+            LEFT JOIN `link_select` ls on dy.id = ls.source_id and ls.type = 6
+            LEFT JOIN `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+            LEFT JOIN link_dynamic_channel ldc on ldc.dynamic_id = dy.id
+
+        where  dy.del_flag = 0 and dy.verify_status = 3 and me.del_flag = 0
+        <if test="dynamicIds != null and dynamicIds.size > 0">
+            and dy.id in
+            <foreach collection="dynamicIds" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+        </if>
+        <if test="subscribeIds != null and subscribeIds.size > 0">
+            and dy.member_id not in
+            <foreach collection="subscribeIds" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+        </if>
+        <if test="industryId != null">
+            and ls.select_config_id = #{industryId}
+        </if>
+        <if test="channelId != null">
+            and ldc.channel_id = #{channelId}
+        </if>
+        group by dy.id
+        order by dy.create_time desc,dy.sequence desc
+    </select>
+
+
+    <select id="getFavorDynamic" resultMap="getDynamicFollowMap">
+        SELECT dy.title,
+               dy.comment_num  commentNum,
+               dy.like_num     likeNum,dy.url,
+               dy.publish_time publishTime,
+               dy.content      dynamicContent,
+               dy.id           dynamicId,dy.video,
+               dy.type,dy.img,dy.thumb,
+               org.`name`      organizationName,
+               me.`name`,
+               me.belong,
+               me.head_image   headImage,
+               dy.member_id publisherId,
+               sel.val position,
+               edu.val education,
+               ct.val cooperationType,
+            group_concat(ll.label_id) labelIds,
+            group_concat(la.val) labelVals
+        from `favor` fa
+            LEFT JOIN `dynamic` dy
+        on fa.dynamic_id = dy.id and dy.del_flag = 0
+            LEFT JOIN `member` me on dy.member_id = me.id
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            left join `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            left join `label` la on ll.label_id = la.id and la.del_flag = 0
+            left join `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        where fa.member_id = #{memberId} and fa.del_flag = 0 and dy.verify_status = 3 and me.del_flag = 0
+group by fa.id
+order by fa.create_time desc
+    </select>
+
+    <select id="getHotDynamic" resultMap="getDynamicFollowMap">
+        SELECT dy.title , dy.comment_num commentNum, dy.like_num likeNum , dy.publish_time publishTime,dy.content
+        dynamicContent,dy.id dynamicId,dy.type,dy.img,dy.video,dy.url,dy.thumb,
+        org.`name` organizationName ,
+        me.`name` , me.belong , me.head_image headImage , dy.member_id publisherId,
+        sel.val position,
+        edu.val education,
+        ct.val cooperationType,
+        group_concat(ll.label_id) labelIds,
+        group_concat(la.val) labelVals
+        FROM `dynamic` dy
+            LEFT JOIN `member` me on dy.member_id = me.id
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            left join `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            left join `label` la on ll.label_id = la.id and la.del_flag = 0
+        left join `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        where dy.del_flag = 0 and dy.hot = 1 and dy.verify_status = 3 and me.del_flag = 0
+        <if test="ids != null and ids.size > 0">
+            and dy.id not in
+            <foreach collection="ids" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+        </if>
+        <if test="subscribeIds != null and subscribeIds.size > 0">
+            and dy.member_id not in
+            <foreach collection="subscribeIds" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+        </if>
+        group by dy.id
+        order by dy.create_time desc
+    </select>
+
+
+    <select id="listRefreshRecommendCache" resultMap="dynamicRecommendCacheMap">
+        SELECT
+        d.id dynamic_id,d.technology_maturity technology_maturity_id,d.member_id push_member_id,
+        m.industry_id industry_id_second ,DATEDIFF(d.create_time,now()) as day_diff,GROUP_CONCAT(ll.label_id) as labels
+        FROM `dynamic` d
+        LEFT JOIN member m ON m.id = d.member_id
+        LEFT JOIN link_label ll ON ll.source_id = d.id
+        LEFT JOIN organization o ON o.id = m.organization_id
+        WHERE d.del_flag = 0 and d.verify_status = 3 AND ( o.type != 0 or (o.type = 0 AND m.verify_status = 2 ) )
+        <if test="null != publishTimeStart and '' != publishTimeStart">
+            AND d.publish_time > #{publishTimeStart}
+        </if>
+        GROUP BY d.id
+        ORDER BY d.create_time DESC
+        LIMIT 5000;
+    </select>
+    <resultMap id="getMyDynamicMap" type="com.qidao.application.entity.dynamic.MyDynamic">
+        <id column="dynamicId" property="dynamicId"/>
+        <result column="title" property="title"/>
+        <result column="commentNum" property="commentNum"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="verifyStatus" property="verifyStatus"/>
+        <result column="likeNum" property="likeNum"/>
+        <result column="dynamicContent" property="dynamicContent"/>
+        <result column="dynamicId" property="dynamicId"/>
+        <result column="img" property="img"/>
+        <result column="video" property="video"/>
+        <result column="thumb" property="thumb"/>
+        <result column="summary" property="summary"/>
+        <result column="url" property="url"/>
+        <result column="organizationName" property="organizationName"/>
+        <result column="name" property="name"/>
+        <result column="belong" property="belong"/>
+        <result column="headImage" property="headImage"/>
+        <result column="publisherId" property="publisherId"/>
+        <result column="position" property="position"/>
+        <result column="education" property="education"/>
+        <result column="type" property="type"/>
+        <result column="labelIds" property="labelIds"/>
+        <result column="labelVals" property="labelVals"/>
+        <association property="assistant" javaType="com.qidao.application.entity.member.AssistantInfo">
+            <id property="id" column="assistantId" />
+            <result column="assistantName" property="name"/>
+            <result column="assistantHeadImage" property="headImg"/>
+        </association>
+    </resultMap>
+    <select id="getMyDynamic" resultMap="getMyDynamicMap">
+        SELECT DISTINCT
+            dy.title,
+            dy.comment_num commentNum,
+            dy.like_num likeNum,
+            dy.publish_time publishTime,
+            dy.content dynamicContent,
+            dy.id dynamicId,
+            dy.type,
+            dy.img,
+            dy.video,
+            dy.url,
+            dy.thumb,
+            org.`name` organizationName,
+            me.`name`,
+            me.belong,
+            me.head_image headImage,
+            dy.member_id publisherId,
+            sel.val `position`,
+	        edu.val education,
+	        ct.val cooperationType,
+	        group_concat(ll.label_id) labelIds,
+	        group_concat(la.val) labelVals,
+            any_value(am.name) assistantName,
+            any_value(am.id) assistantId,
+            any_value(am.head_image) assistantHeadImage
+        FROM
+            `dynamic` dy
+            LEFT JOIN `member` me ON dy.member_id = me.id
+            AND me.del_flag = 0
+            LEFT JOIN `organization` org ON me.organization_id = org.id
+            AND org.del_flag = 0
+            LEFT JOIN `select_config` sel ON me.position_id = sel.id
+            AND sel.`status` = 0
+            AND sel.del_flag = 0
+            LEFT JOIN `select_config` edu ON me.education_id = edu.id
+            AND edu.`status` = 0
+            AND edu.del_flag = 0
+            LEFT JOIN `link_label` ll ON dy.id = ll.source_id
+            AND ll.del_flag = 0
+            AND ll.type = 0
+            LEFT JOIN `label` la ON ll.label_id = la.id
+            AND la.del_flag = 0
+            LEFT JOIN `select_config` ct ON dy.cooperation_type = ct.id
+            AND ct.del_flag = 0
+            AND ct.`status` = 0
+            LEFT JOIN `link_publish_content` lpc on dy.id = lpc.publish_id
+            AND lpc.del_flag = 0
+            AND lpc.type = 0
+            AND lpc.publish_type = 1
+            LEFT JOIN `member` am on lpc.salesman_id = am.id
+            AND am.del_flag = 0
+            AND am.teacher_id = dy.member_id
+            AND am.role = 4
+            AND am.organization_id = me.organization_id
+        WHERE
+            dy.del_flag = 0
+          AND dy.member_id = #{id}
+        <if test="assistantId != null">
+            AND dy.id NOT IN (
+            SELECT publish_id
+            FROM link_publish_content
+            WHERE member_id = #{id}
+            AND salesman_id != #{assistantId}
+            AND del_flag = 0
+            AND publish_type = 1
+            AND type = 0
+            )
+        </if>
+        GROUP BY dy.id
+        order by dy.create_time desc
+    </select>
+    <select id="getOrganizationDynamicByArticle"
+            resultMap="getDynamicFollowMap">
+        SELECT dy.title , dy.comment_num commentNum, dy.like_num likeNum , dy.publish_time publishTime,dy.content
+                                         dynamicContent,dy.id dynamicId,dy.type,dy.video,dy.thumb,
+               org.`name` organizationName ,dy.img,dy.url,
+               me.`name` , me.belong , me.head_image headImage , dy.member_id publisherId,
+               sel.val position,
+        edu.val education,
+        ct.val cooperationType,
+        group_concat(DISTINCT ll.label_id) labelIds,
+        group_concat(DISTINCT la.val) labelVals
+        FROM `dynamic` dy
+            LEFT JOIN `member` me on dy.member_id = me.id
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            left join `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            left join `label` la on ll.label_id = la.id and la.del_flag = 0
+            left join `link_select` ls on ls.source_id = dy.id and ls.del_flag = 0 and ls.type = 13
+            left join `select_config` ar on ar.id = ls.select_config_id and ar.`status` = 0 and ar.del_flag = 0
+            left join `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        where dy.del_flag = 0  and org.id = #{organizationId} and ls.select_config_id = #{articleId} and me.del_flag = 0
+        <if test="verify == false">
+            and dy.verify_status = 3
+        </if>
+        group by dy.id
+        order by dy.create_time desc
+    </select>
+    <select id="findDynamicLabels" resultType="java.lang.String">
+        select  GROUP_CONCAT(l.val)
+        from `dynamic` d
+                 LEFT JOIN `link_label` ll on d.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+                 LEFT JOIN `label` l on ll.label_id = l.id and l.del_flag = 0
+        WHERE d.id = #{dynamicId}
+    </select>
+    <select id="getMyDynamicByArticle" resultMap="getDynamicFollowMap">
+        SELECT dy.title , dy.comment_num commentNum, dy.like_num likeNum , dy.publish_time publishTime,dy.content
+        dynamicContent,dy.id dynamicId,dy.type,dy.img,dy.video,dy.url,dy.thumb,
+        org.`name` organizationName ,
+        me.`name` , me.belong , me.head_image headImage , dy.member_id publisherId,
+        sel.val position,
+        edu.val education,
+        ct.val cooperationType,
+        group_concat(DISTINCT  ll.label_id) labelIds,
+        group_concat(DISTINCT la.val) labelVals,
+        any_value(am.name) assistantName,
+        any_value(am.id) assistantId,
+        any_value(am.head_image) assistantHeadImage
+        FROM `dynamic` dy
+            LEFT JOIN `member` me on dy.member_id = me.id and me.del_flag = 0
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+        LEFT JOIN `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+        LEFT JOIN `label` la on ll.label_id = la.id and la.del_flag = 0
+        LEFT JOIN `link_select` ls on ls.source_id = dy.id and ls.del_flag = 0 and ls.type = 13
+        LEFT JOIN `select_config` ar on ar.id = ls.select_config_id and ar.`status` = 0 and ar.del_flag = 0
+        LEFT JOIN `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        LEFT JOIN `link_publish_content` lpc on dy.id = lpc.publish_id
+        AND lpc.del_flag = 0
+        AND lpc.type = 0
+        AND lpc.publish_type = 1
+        LEFT JOIN `member` am on lpc.salesman_id = am.id
+        AND am.del_flag = 0
+        AND am.teacher_id = dy.member_id
+        AND am.role = 4
+        AND am.organization_id = me.organization_id
+        where dy.del_flag = 0 and dy.member_id = #{sourceId} and ar.id = #{articleId} and me.del_flag = 0
+        <if test="verify == false">
+            and dy.verify_status = 3
+        </if>
+        group by dy.id
+        order by dy.create_time desc
+    </select>
+    <select id="getRandomDynamic" resultType="com.qidao.application.entity.dynamic.DynamicFollow">
+        SELECT dy.title ,
+               dy.comment_num commentNum,
+               dy.like_num likeNum ,
+               dy.publish_time publishTime,
+               dy.content dynamicContent,
+               dy.id dynamicId,
+               dy.img,
+               dy.url,
+               dy.thumb,
+               dy.type,
+               dy.video,
+               org.`name` organizationName ,
+               me.`name` ,
+               me.belong ,
+               me.head_image headImage ,
+               dy.member_id publisherId,
+               sel.val position,
+               edu.val education,
+               ct.val cooperationType,
+               group_concat(DISTINCT ll.label_id) labelIds,
+               group_concat(DISTINCT la.val) labelVals
+        FROM `dynamic` dy
+            LEFT JOIN `member` me on dy.member_id = me.id
+            LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+            LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+            LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+            LEFT JOIN `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+            LEFT JOIN `label` la on ll.label_id = la.id and la.del_flag = 0
+            LEFT JOIN `link_select` ls on dy.id = ls.source_id and ls.type = 6
+            LEFT JOIN `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+            LEFT JOIN link_dynamic_channel ldc on ldc.dynamic_id = dy.id
+
+        where  dy.del_flag = 0
+        and dy.verify_status = 3
+        and me.del_flag = 0
+        group by dy.id
+        order by RAND() , dy.create_time desc
+        limit #{limit}
+    </select>
+    <select id="myselfDynamicByArticle" resultMap="getDynamicFollowMap">
+        SELECT dy.title ,
+               dy.comment_num commentNum,
+               dy.like_num likeNum ,
+               dy.publish_time publishTime,
+               dy.content dynamicContent,
+               dy.id dynamicId,
+               dy.type,
+               dy.img,
+               dy.video,
+               dy.url,
+               dy.thumb,
+        org.`name` organizationName ,
+        me.`name` ,
+               me.belong ,
+               me.head_image headImage ,
+               dy.member_id publisherId,
+        sel.val position,
+        edu.val education,
+        ct.val cooperationType,
+        group_concat(ll.label_id) labelIds,
+        group_concat(la.val) labelVals,
+        any_value(am.name) assistantName,
+        any_value(am.id) assistantId,
+        any_value(am.head_image) assistantHeadImage
+        FROM `dynamic` dy
+        LEFT JOIN `member` me on dy.member_id = me.id
+        LEFT JOIN `organization` org on me.organization_id = org.id and org.del_flag = 0
+        LEFT JOIN `select_config` sel on me.position_id = sel.id and sel.`status` = 0 and sel.del_flag = 0
+        LEFT JOIN `select_config` edu on me.education_id = edu.id and edu.`status` = 0 and edu.del_flag = 0
+        LEFT JOIN `link_label` ll on dy.id = ll.source_id and ll.del_flag = 0 and ll.type = 0
+        LEFT JOIN `label` la on ll.label_id = la.id and la.del_flag = 0
+        LEFT JOIN `link_select` ls on ls.source_id = dy.id and ls.del_flag = 0 and ls.type = 13
+        LEFT JOIN `select_config` ar on ar.id = ls.select_config_id and ar.`status` = 0 and ar.del_flag = 0
+        LEFT JOIN `select_config` ct on dy.cooperation_type = ct.id and ct.del_flag = 0 and ct.`status` = 0
+        LEFT JOIN `link_publish_content` lpc on dy.id = lpc.publish_id
+        AND lpc.del_flag = 0
+        AND lpc.type = 0
+        AND lpc.publish_type = 1
+        LEFT JOIN `member` am on lpc.salesman_id = am.id
+        AND am.del_flag = 0
+        AND am.teacher_id = dy.member_id
+        AND am.role = 4
+        AND am.organization_id = me.organization_id
+        where dy.del_flag = 0
+            and dy.member_id = #{memberId}
+            and ar.id = #{articleId}
+            and me.del_flag = 0
+        <if test="assistantId != null">
+            AND dy.id NOT IN (
+            SELECT publish_id
+            FROM link_publish_content
+            WHERE member_id = #{memberId}
+            AND salesman_id != #{assistantId}
+            AND del_flag = 0
+            AND publish_type = 1
+            AND type = 0
+            )
+        </if>
+        group by dy.id
+        order by dy.create_time desc
+    </select>
+</mapper>

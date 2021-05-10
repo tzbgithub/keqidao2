@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.config.CustomSelectConfigMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.entity.config.SelectConfig">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="pid" jdbcType="BIGINT" property="pid"/>
+        <result column="type" jdbcType="INTEGER" property="type"/>
+        <result column="val" jdbcType="VARCHAR" property="val"/>
+        <result column="sequence" jdbcType="INTEGER" property="sequence"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+        <result column="del_flag" jdbcType="TINYINT" property="delFlag"/>
+    </resultMap>
+    <select id="getSelectConfigByIds" resultType="com.qidao.application.entity.config.SelectConfig">
+        SELECT id,val
+        FROM
+        `select_config`
+        <where>
+            AND id
+            IN
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+            <if test="delFlag != null">
+                AND del_flag = #{delFlag}
+            </if>
+        </where>
+    </select>
+
+    <select id="getHotSelectConfig" resultType="java.lang.String">
+        SELECT val
+        FROM
+            `select_config`
+        <where>
+            type = #{type}
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="delFlag != null">
+                AND del_flag = #{delFlag}
+            </if>
+            ORDER BY sequence DESC
+            LIMIT #{topN}
+        </where>
+    </select>
+    <select id="getIndustryId" resultType="java.lang.Long">
+        SELECT
+            DISTINCT select_config_id
+        FROM link_select
+        WHERE del_flag = 0
+        AND source_id in (
+            SELECT DISTINCT member_id FROM dynamic WHERE del_flag = 0 and verify_status = 3
+        )
+        AND type = 6
+    </select>
+
+
+</mapper>

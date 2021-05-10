@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qidao.application.mapper.member.CustomMemberMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.vo.MemberVo">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="no" jdbcType="VARCHAR" property="no" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="organization_id" jdbcType="BIGINT" property="organizationId" />
+        <result column="role" jdbcType="INTEGER" property="role" />
+        <result column="position_id" jdbcType="BIGINT" property="positionId" />
+        <result column="education_id" jdbcType="BIGINT" property="educationId" />
+        <result column="scale_id" jdbcType="BIGINT" property="scaleId" />
+        <result column="phone" jdbcType="CHAR" property="phone" />
+        <result column="push_status" jdbcType="INTEGER" property="pushStatus" />
+        <result column="belong" jdbcType="VARCHAR" property="belong" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="head_image" jdbcType="VARCHAR" property="headImage" />
+        <result column="backend_image" jdbcType="VARCHAR" property="backendImage" />
+        <result column="vip_start_time" jdbcType="TIMESTAMP" property="vipStartTime" />
+        <result column="vip_end_time" jdbcType="TIMESTAMP" property="vipEndTime" />
+        <result column="industry_id" jdbcType="BIGINT" property="industryId" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
+        <result column="im_easemob_username" jdbcType="VARCHAR" property="imEasemobUsername" />
+        <result column="im_easemob_active" jdbcType="INTEGER" property="imEasemobActive" />
+        <result column="type" jdbcType="INTEGER" property="type" />
+        <result column="teacher_id" jdbcType="BIGINT" property="teacherId" />
+        <result column="role" jdbcType="INTEGER" property="role" />
+    </resultMap>
+    <resultMap id="BaseResultTutorInfoReqMap" type="com.qidao.application.vo.TutorInfoReq">
+    </resultMap>
+    <update id="kickOutMember">
+        update `member` set organization_id = null , belong = null where id = #{id}
+    </update>
+
+    <select id="getMemberByMemberId" resultType="com.qidao.application.entity.member.MemberInfo">
+        select
+               a.id id,
+               d.`name` organizationName ,
+               e.val education ,
+               f.val position  ,
+               d.belong belong ,
+               a.head_image headImage ,
+               a.`name` ,
+               a.verify_status verifyStatus,
+             a.backend_image backendImage ,
+             a.organization_id organizationId ,
+             a.union_id unionId ,
+             d.address_city_name cityName ,
+             d.address_area_name areaName ,
+             g.id industryId,
+             g.val industry ,
+            GROUP_CONCAT(sc.val) industryNames ,
+            GROUP_CONCAT(ls.select_config_id) industryIds ,
+            d.type organizationType ,
+            a.level ,
+            a.vip_end_time vipEndTime,
+               a.role,
+               a.phone,
+               a.im_easemob_username,
+        a.qualifications,
+                a.teacher_id teacherId,
+               a.im_easemob_username
+        from `member` a
+            left  join `organization` d on a.organization_id = d.id and d.del_flag = 0
+            left  join `select_config` e on a.education_id = e.id and e.`status` = 0 and e.del_flag = 0
+            left  join `select_config` f on a.position_id = f.id and f.`status` = 0 and f.del_flag = 0
+            left  join `select_config` g on a.industry_id = g.id and g.`status` = 0 and g.del_flag = 0
+            left  join `link_select` ls on a.id = ls.source_id and ls.type = 6 and ls.del_flag= 0
+        LEFT JOIN  `select_config` sc on ls.select_config_id = sc.id
+        where a.id = #{memberId} and a.del_flag = 0
+    </select>
+    <select id="getMemberByUnionId" resultType="com.qidao.application.entity.member.MemberInfo">
+        select
+               a.id id,
+               d.`name` organizationName ,
+               e.val education ,
+               f.val position  ,
+               d.belong belong ,
+               a.head_image headImage ,
+         a.`name` ,
+         a.backend_image backendImage ,
+         a.organization_id organizationId ,
+         a.union_id unionId ,
+         d.address_city_name cityName ,
+          d.address_area_name areaName ,
+          GROUP_CONCAT(sc.val) industryNames ,
+          GROUP_CONCAT(ls.select_config_id) industryIds ,
+          g.val industry ,
+          g.id industryId ,
+          d.type organizationType ,
+          a.level ,
+          a.vip_end_time vipEndTime,
+               a.role,
+               a.phone,
+        a.qualifications
+        from `member` a
+            left  join `organization` d on a.organization_id = d.id and d.del_flag = 0
+            left  join `select_config` e on a.education_id = e.id and e.`status` = 0 and e.del_flag = 0
+            left join `select_config` f on a.position_id = f.id and f.`status` = 0 and f.del_flag = 0
+            left  join `select_config` g on a.industry_id = g.id and g.`status` = 0 and g.del_flag = 0
+            left  join `link_select` ls on a.id = ls.source_id and ls.type = 6 and ls.del_flag= 0
+            LEFT JOIN  `select_config` sc on ls.select_config_id = sc.id
+        where a.union_id = #{unionId} and a.del_flag = 0
+group by a.id
+    </select>
+    <select id="getDetailedById" resultType="com.qidao.application.entity.member.MemberDetailed">
+        select a.id ,
+               a.union_id unionId ,
+               a.backend_image backendImage ,
+               b.belong ,
+               a.email ,
+               a.head_image headImage ,
+               a.`name`,a.education_id educationId ,
+               a.position_id positionId ,
+               a.im_easemob_username as imEasemobUsername,
+               b.`name` organizationName ,
+               b.vip_end_time organizationVipEndTime,
+               c.val education ,
+               GROUP_CONCAT(sc.val) industryNames ,
+               GROUP_CONCAT(ls.select_config_id) industryIds ,
+               e.val `position`,
+               b.type organizationType,
+               a.level,
+               a.vip_end_time vipEndTime,
+               a.role,a.phone,b.id organizationId,
+                b.address_province_id provinceCode,
+                b.address_province_name provinceName,
+                b.address_city_id cityCode,
+                b.address_city_name cityName,
+                b.address_area_id areaCode,
+                b.address_area_name areaName,
+                g.id industryId,
+                g.val industry,
+        a.verify_status verifyStatus,
+               a.qualifications
+        from `member` a
+            left  join `organization` b on a.organization_id = b.id and b.del_flag = 0
+            left  join `select_config` c on a.education_id = c.id and c.del_flag = 0
+            left  join `link_select` ls on a.id = ls.source_id and ls.type = 6 and ls.del_flag= 0
+            left  join `select_config` g on a.industry_id = g.id and g.`status` = 0 and g.del_flag = 0
+            LEFT JOIN  `select_config` sc on ls.select_config_id = sc.id
+            left  join `select_config` e on a.position_id = e.id and e.del_flag = 0
+        where a.id = #{memberId} and a.del_flag = 0
+    </select>
+    <select id="getDetailedByUnionId" resultType="com.qidao.application.entity.member.MemberDetailed">
+        select a.id , a.union_id unionId ,
+               a.backend_image , b.belong ,
+               a.email ,
+               a.head_image headImage ,
+               a.`name`,
+               a.education_id educationId ,
+               a.position_id positionId ,
+               b.`name` organizationName ,
+               c.val education ,
+               GROUP_CONCAT(sc.val) industryNames ,
+               GROUP_CONCAT(ls.select_config_id) industryIds ,
+               e.val position,
+               g.id industryId,
+                g.val industry,
+               b.type organizationType,
+               a.level,
+               a.vip_end_time vipEndTime,
+               a.role,a.phone,a.phone,b.id organizationId,
+                b.address_province_id provinceCode,
+                b.address_province_name provinceName,
+                b.address_city_id cityCode,
+                b.address_city_name cityName,
+                b.address_area_id areaCode,
+                b.address_area_name areaName,
+        a.verify_status verifyStatus,
+        a.qualifications
+        from `member` a
+            left  join `organization` b on a.organization_id = b.id and b.del_flag = 0
+            left join `select_config` c on a.education_id = c.id and c.del_flag = 0
+            left  join `link_select` ls on a.id = ls.source_id and ls.type = 6 and ls.del_flag= 0
+            LEFT JOIN  `select_config` sc on ls.select_config_id = sc.id
+            left join `select_config` e on a.position_id = e.id and e.del_flag = 0
+            left  join `select_config` g on a.industry_id = g.id and g.`status` = 0 and g.del_flag = 0
+        where a.union_id = #{unionId} and a.del_flag = 0
+        group by a.id
+    </select>
+
+    <select id="findMemberById" resultMap="BaseResultMap">
+SELECT
+        m.id,
+        m.organization_id,
+        m.position_id,
+        m.education_id,
+        m.`name`,
+        m.belong,
+        m.create_time,
+    m.head_image,
+    m.backend_image,
+       m.password,
+        o.scale_id,
+    o.`name` organizationName,
+       o.type,
+       m.level,
+       m.vip_start_time,
+       m.vip_end_time,
+       m.no,
+        m.head_image,
+        m.backend_image,
+       o.scale_id,
+    o.`name` organizationName,
+       m.role,
+       m.teacher_id
+    FROM
+        member m
+    LEFT JOIN organization o on m.organization_id = o.id
+    WHERE
+        m.id = #{id} and m.del_flag = 0
+  </select>
+
+
+    <select id="findOrganizationMember" resultMap="BaseResultTutorInfoReqMap">
+                    SELECT
+                m.id,
+                m.`name`,
+                m.head_image as headImage,
+                m.create_time,
+                m.position_id as positionId,
+                sc.val
+            FROM
+                member m
+            LEFT JOIN select_config sc ON m.position_id = sc.id
+            WHERE
+                m.organization_id = #{organizationId}
+            ORDER BY
+                position_id,
+                create_time DESC
+            LIMIT 5
+    </select>
+
+
+    <select id="findOrganizationMembers" resultMap="BaseResultTutorInfoReqMap">
+                    SELECT
+                m.`name`,
+                m.head_image as headImage,
+                m.create_time,
+                m.position_id as positionId,
+                sc.val
+            FROM
+                member m
+            LEFT JOIN select_config sc ON m.position_id = sc.id
+            WHERE
+                m.organization_id = #{organizationId}
+            ORDER BY
+                position_id,
+                create_time DESC
+    </select>
+    <select id="findAgreeHeadImages" resultType="java.lang.String">
+        SELECT head_image
+        from `member` where id in (
+            SELECT member_id  from `log_behave_dynamic` where del_flag = 0 and type  = 0 and source_id = #{dynamicId} order by create_time desc
+        ) LIMIT 3
+    </select>
+
+    <select id="findAgreeHeadImagesList" resultType="java.lang.String">
+        SELECT head_image
+        from `member` where id in (
+            SELECT member_id  from `log_behave_dynamic` where del_flag = 0 and type  = 0 and source_id = in
+            <foreach collection="dynamicIds" item="id" open="(" separator="," close=")" index="index">
+                #{id}
+            </foreach>
+            order by create_time desc
+        ) LIMIT 3
+    </select>
+    <select id="getMemberIndustry" resultType="com.qidao.application.vo.SelectConfigResp">
+        select sc.id , sc.val
+        from `link_select` ls
+        inner join `select_config` sc on ls.select_config_id = sc.id
+        where ls.type = 6 and ls.source_id = #{memberId} and ls.del_flag = 0
+    </select>
+
+    <select id="dynamicCountByMemberId" resultType="com.qidao.application.vo.MemberDynamicCountVo">
+        select
+            sc.id typeId,
+            sc.val typeName,
+            count(d.id) countNum
+        from dynamic d
+        inner join link_select ls on ls.source_id = d.id and ls.type = 13
+        inner join select_config sc on sc.id = ls.select_config_id
+        where d.member_id = #{memberId}
+        and d.del_flag=0
+        <if test="isByVerifyStatus">
+            and d.verify_status = 3
+        </if>
+        group by sc.id,sc.val
+    </select>
+
+    <sql id="selectMemberIdsWhere">
+        <if test="lastMemberId != null">
+            and   m.id > ${lastMemberId}
+        </if>
+
+        <if test="limit != null">
+            LIMIT ${limit}
+        </if>
+    </sql>
+
+    <select id="getMemberIdAll" resultType="java.lang.Long">
+        SELECT
+                m.id
+        FROM
+                member m
+        WHERE
+            m.del_flag = 0
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+
+    <select id="getAllVipMemberIdAll" resultType="java.lang.Long">
+        SELECT
+            m.id
+        FROM
+            member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+            m.del_flag = 0
+        AND o.del_flag = 0
+        AND (
+            (CASE    o.type
+                WHEN 0 THEN m.vip_end_time
+                WHEN 1 THEN o.vip_end_time
+            END) > NOW()
+        )
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+
+    <select id="getAllVipMemberIdAllCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(m.id)
+        FROM
+            member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+            m.del_flag = 0
+        AND o.del_flag = 0
+        AND (
+            (CASE o.type
+                WHEN 0 THEN m.vip_end_time
+                WHEN 1 THEN o.vip_end_time
+            END) > NOW()
+        )
+    </select>
+
+    <!--获取 所有实验室用户及其助手（审核中和审核通过）用户id-->
+    <select id="getAllLaboratoryAssistantMemberIdAll" resultType="java.lang.Long">
+        SELECT
+            m.id
+        FROM
+            member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+            m.del_flag = 0
+        AND o.del_flag = 0
+        AND o.type = 0
+        AND m.verify_status IN (2,3)
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+
+    <select id="getAllLaboratoryAssistantMemberIdAllCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(m.id)
+        FROM
+            member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+            m.del_flag = 0
+        AND o.del_flag = 0
+        AND o.type = 0
+        AND m.verify_status IN (2,3)
+    </select>
+
+    <!--获取 所有实验室用户及其助手 （审核通过）用户id-->
+    <select id="getAdoptLaboratoryAssistantMemberIdAll" resultType="java.lang.Long">
+        SELECT
+            m.id
+        FROM
+            member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+            m.del_flag = 0
+        AND o.del_flag = 0
+        AND o.type = 0
+        AND m.verify_status = 2
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+
+    <select id="getAdoptLaboratoryAssistantMemberIdAllCount" resultType="java.lang.Long">
+        SELECT
+        COUNT(m.id)
+        FROM
+        member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+        m.del_flag = 0
+        AND o.del_flag = 0
+        AND o.type = 0
+        AND m.verify_status = 2
+    </select>
+
+    <!--获取 所有企业用户用户id-->
+    <select id="getAllEnterpriseMemberIdAll" resultType="java.lang.Long">
+        SELECT
+            m.id
+        FROM
+            member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+            m.del_flag = 0
+        AND o.del_flag = 0
+        AND o.type = 1
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+
+    <select id="getAllEnterpriseMemberIdAllCount" resultType="java.lang.Long">
+        SELECT
+             COUNT(m.id)
+        FROM member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+              m.del_flag = 0
+          AND o.del_flag = 0
+          AND o.type = 1
+    </select>
+
+    <!--获取 所有vip企业用户 id-->
+    <select id="getAllEnterpriseVipMemberIdAll" resultType="java.lang.Long">
+        SELECT
+            m.id
+        FROM
+            member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE
+            m.del_flag = 0
+        AND o.del_flag = 0
+        AND o.type = 1
+        AND o.vip_end_time > NOW()
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+
+    <select id="getAllEnterpriseVipMemberIdAllCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(m.id)
+        FROM member m
+        INNER JOIN organization o ON o.responsible_member_id = m.id
+        WHERE m.del_flag = 0
+          AND o.del_flag = 0
+          AND o.type = 1
+          AND o.vip_end_time > NOW()
+    </select>
+
+    <!--获取 所有未修改名称&头像 用户id-->
+    <select id="getNotUpdateNameAndHeadImg" resultType="java.lang.Long">
+        SELECT
+            m.id
+        FROM
+            member m
+        WHERE
+            m.del_flag = 0
+        AND m.head_image = 'defaultlogo.png'
+        AND m.update_time IS NULL
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+
+    <select id="getNotUpdateNameAndHeadImgCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(m.id)
+        FROM
+            member m
+        WHERE
+            m.del_flag = 0
+        AND m.head_image = 'defaultlogo.png'
+        AND m.update_time IS NULL
+        <include refid="selectMemberIdsWhere"></include>
+    </select>
+</mapper>

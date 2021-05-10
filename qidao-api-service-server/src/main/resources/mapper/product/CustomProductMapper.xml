@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qidao.application.mapper.product.CustomProductMapper">
+    <select id="getProduct" resultType="com.qidao.application.entity.product.ProductSku">
+        SELECT id , `name` , summary , imgs , sale_price salePrice , market_price marketPrice ,
+               `type` , server_val serverVal,permission,extra,third_product_id thirdProductId
+        FROM `product_sku`
+        where  del_flag = 0 AND status=0 and (permission = 0
+                <if test="permission != null">
+                    or permission = #{permission}
+                </if>
+            ) and (canal_permission = 0 or canal_permission = #{canalPermission})
+        <if test="productType != null and productType == 0">
+            and product_type = #{productType}
+        </if>
+        <if test="productType != null and productType == 1">
+            and product_type = #{productType} and stock > 0
+        </if>
+        order by sequence desc
+    </select>
+</mapper>

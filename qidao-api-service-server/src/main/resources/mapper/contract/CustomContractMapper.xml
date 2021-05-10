@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.contract.CustomContractMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.entity.contract.Contract">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+        <result column="del_flag" jdbcType="TINYINT" property="delFlag"/>
+        <result column="server_id" jdbcType="BIGINT" property="serverId"/>
+        <result column="organization_id_party_a" jdbcType="BIGINT" property="organizationIdPartyA"/>
+        <result column="organization_id_party_b" jdbcType="BIGINT" property="organizationIdPartyB"/>
+        <result column="member_id_party_a" jdbcType="BIGINT" property="memberIdPartyA"/>
+        <result column="member_id_part_b" jdbcType="BIGINT" property="memberIdPartB"/>
+        <result column="no" jdbcType="VARCHAR" property="no"/>
+        <result column="sign_time" jdbcType="TIMESTAMP" property="signTime"/>
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="sign_address_province_id" jdbcType="INTEGER" property="signAddressProvinceId"/>
+        <result column="sign_address_province_name" jdbcType="VARCHAR" property="signAddressProvinceName"/>
+        <result column="sign_address_city_id" jdbcType="INTEGER" property="signAddressCityId"/>
+        <result column="sign_address_city_name" jdbcType="VARCHAR" property="signAddressCityName"/>
+        <result column="sign_address_area_id" jdbcType="INTEGER" property="signAddressAreaId"/>
+        <result column="sign_address_area_name" jdbcType="VARCHAR" property="signAddressAreaName"/>
+        <result column="confirm_time" jdbcType="TIMESTAMP" property="confirmTime"/>
+        <result column="server_title" jdbcType="VARCHAR" property="serverTitle"/>
+    </resultMap>
+    <select id="getContractItemList"
+            resultMap="BaseResultMap">
+        SELECT contract.id,
+               contract.server_title,
+               contract.`status`,
+               contract.organization_id_party_a,
+               contract.member_id_party_a,
+               contract.sign_time,
+               contract.end_time
+        FROM contract
+        WHERE (
+                contract.member_id_party_a = #{memberId,jdbcType=BIGINT}
+                OR
+                contract.member_id_part_b = #{memberId,jdbcType=BIGINT}
+            )
+          AND contract.del_flag = #{delFlag,jdbcType=TINYINT}
+    </select>
+    <select id="getContract" resultMap="BaseResultMap">
+        SELECT *
+        FROM contract
+        WHERE contract.id = #{contractId,jdbcType=BIGINT}
+          AND (
+                contract.member_id_party_a = #{memberId,jdbcType=BIGINT}
+                OR
+                contract.member_id_part_b = #{memberId,jdbcType=BIGINT}
+            )
+          AND contract.del_flag = #{delFlag,jdbcType=TINYINT}
+    </select>
+</mapper>

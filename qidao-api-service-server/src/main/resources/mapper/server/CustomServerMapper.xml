@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.server.CustomServerMapper">
+
+    <resultMap id="BaseResultMap" type="com.qidao.application.entity.server.Server">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="create_by" jdbcType="BIGINT" property="createBy"/>
+        <result column="update_by" jdbcType="BIGINT" property="updateBy"/>
+        <result column="del_flag" jdbcType="TINYINT" property="delFlag"/>
+        <result column="organized_id_party_a" jdbcType="BIGINT" property="organizedIdPartyA"/>
+        <result column="organized_id_party_b" jdbcType="BIGINT" property="organizedIdPartyB"/>
+        <result column="member_id_party_a" jdbcType="BIGINT" property="memberIdPartyA"/>
+        <result column="member_id_party_b" jdbcType="BIGINT" property="memberIdPartyB"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="industry_id" jdbcType="VARCHAR" property="industryId"/>
+        <result column="address_province_id" jdbcType="INTEGER" property="addressProvinceId"/>
+        <result column="address_province_name" jdbcType="VARCHAR" property="addressProvinceName"/>
+        <result column="address_city_id" jdbcType="INTEGER" property="addressCityId"/>
+        <result column="address_city_name" jdbcType="VARCHAR" property="addressCityName"/>
+        <result column="address_area_id" jdbcType="INTEGER" property="addressAreaId"/>
+        <result column="address_area_name" jdbcType="VARCHAR" property="addressAreaName"/>
+        <result column="spec_area_id" jdbcType="BIGINT" property="specAreaId"/>
+        <result column="spec_amount_id" jdbcType="BIGINT" property="specAmountId"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="thumb" jdbcType="VARCHAR" property="thumb"/>
+        <result column="url" jdbcType="VARCHAR" property="url"/>
+        <result column="solution_time" jdbcType="TIMESTAMP" property="solutionTime"/>
+    </resultMap>
+
+    <resultMap id="InfoServerPageMap" type="com.qidao.application.vo.InfoServerPageRep">
+    </resultMap>
+    <resultMap id="InfoOrganizationServerPageMap" type="com.qidao.application.vo.InfoOrganizationServicePageRep">
+    </resultMap>
+
+    <resultMap id="ServerIndustryRepMap" type="com.qidao.application.vo.ServerIndustryRep">
+    </resultMap>
+
+
+    <sql id="List_Item">
+        id, spec_amount_id, title, create_time, industry_id ,address_province_name, address_city_name,address_area_name,solution_time, SUBSTRING(description,1,100) AS description
+    </sql>
+
+
+
+    <select id="infoServerPage" resultMap="InfoServerPageMap">
+
+              SELECT
+          sv.id,
+          sv.address_province_name as addressProvinceName,
+          sv.address_city_name as addressCityName,
+          sv.solution_time as solutionTime ,
+          sv.title,sv.spec_amount_id as specAmountId,
+          sv.spec_area_id as specAreaId,
+          sc.val as specAmountName,
+        sa.val as specAreaName,
+                    group_concat(l.val) AS label,
+          SUBSTRING(sv.description,1,100) AS description
+      FROM
+          `server` sv
+      LEFT JOIN select_config sc on sc.type = 3 and sc.id = sv.spec_amount_id
+      LEFT JOIN select_config sa on sa.type = 0 and sa.id = sv.spec_area_id
+        left join member m on sv.member_id_party_a = m.id
+              LEFT join `link_label` ll on sv.id = ll.source_id and ll.del_flag = 0
+              left join `label` l on ll.label_id = l.id
+      WHERE
+          sv.member_id_party_a = #{memberId}  and sv.del_flag = 0 and sv.status = 1
+              <if test="verify == false">
+                  and m.verify_status = 2
+              </if>
+              group by sv.id
+              ORDER BY
+	   sv.create_time DESC
+
+
+    </select>
+
+
+    <resultMap id="severListServer" type="com.qidao.application.entity.server.ServerList">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="industry_id" jdbcType="VARCHAR" property="industryId"/>
+        <result column="address_province_name" jdbcType="VARCHAR" property="addressProvinceName"/>
+        <result column="address_city_name" jdbcType="VARCHAR" property="addressCityName"/>
+        <result column="address_area_name" jdbcType="VARCHAR" property="addressAreaName"/>
+        <result column="spec_amount_id" jdbcType="BIGINT" property="specAmountId"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="solution_time" jdbcType="TIMESTAMP" property="solutionTime"/>
+        <result column="memberId" jdbcType="BIGINT" property="memberId"/>
+        <result column="verify_status" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+    <select id="list" resultMap="severListServer">
+        SELECT
+        s.id,
+        s.spec_amount_id,
+        s.title,
+        s.create_time,
+        s.industry_id ,
+        s.address_province_name,
+        s.address_city_name,
+        s.address_area_name,
+        s.solution_time,
+               m.id memberId,
+               m.verify_status,
+        SUBSTRING(s.description,1,100) AS description
+        FROM
+        server s
+        left join member m on s.member_id_party_a = m.id
+        <where>
+         and m.del_flag = 0 and s.del_flag = 0
+            <if test="industryId != null">
+                AND  s.industry_id in
+                <foreach item="industryId" collection="industryId" index="index" open="(" separator="," close=")">
+                    #{industryId}
+                </foreach>
+            </if>
+            <if test="specAreaId != null">
+                AND s.`spec_area_id` = #{specAreaId,jdbcType=BIGINT}
+            </if>
+            <if test="queryTimeStart != null">
+                AND s.`create_time` &gt;= #{queryTimeStart,jdbcType=TIMESTAMP}
+            </if>
+            <if test="queryTimeEnd != null">
+                AND s.`create_time` &lt;= #{queryTimeEnd,jdbcType=TIMESTAMP}
+            </if>
+            <if test="keyword != null">
+                AND s.`title` LIKE CONCAT ('%',#{keyword,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="delFlag != null">
+                AND s.`del_flag` = #{delFlag,jdbcType=TINYINT}
+            </if>
+            <if test="status != null">
+                AND s.`status` = #{status}
+            </if>
+            <if test="labelIds != null">
+                AND EXISTS (
+                    SELECT DISTINCT
+                    source_id
+                    FROM
+                    link_label AS out_table
+                    WHERE
+                    out_table.source_id = server.id
+                    AND EXISTS (
+                        SELECT
+                        source_id
+                        FROM
+                        link_label AS inner_table
+                        WHERE
+                        inner_table.source_id = out_table.source_id
+                        AND inner_table.label_id IN
+                        <foreach collection="labelIds" item="labelId" open="(" separator="," close=")">
+                           #{labelId}
+                        </foreach>
+                    )
+                )
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="filterIdsWithLabelIds" resultType="Long">
+        SELECT DISTINCT
+        source_id
+        FROM
+        link_label AS out_table
+        WHERE
+        out_table.source_id IN
+        <foreach collection="serverIds" item="serverId" open="(" separator="," close=")">
+            #{serverId}
+        </foreach>
+        AND EXISTS (
+        SELECT
+        source_id
+        FROM
+        link_label AS inner_table
+        WHERE
+        inner_table.source_id = out_table.source_id
+        AND inner_table.label_id IN
+        <foreach collection="labelIds" item="labelId" open="(" separator="," close=")">
+            #{labelId}
+        </foreach>
+        )
+    </select>
+
+    <select id="infoOrganizationServerContentPage" resultMap="InfoOrganizationServerPageMap">
+
+        SELECT
+        sv.id,
+        sv.address_province_name as addressProvinceName,
+        sv.address_city_name as addressCityName,
+        sv.solution_time as solutionTime ,
+        sv.title,sv.spec_amount_id as specAmountId,
+        sv.spec_area_id as specAreaId,
+        sv.description as description,
+        sc.val as specAmountName,
+               m.id memberId,
+               m.verify_status verifyStatus
+        FROM
+        `server` sv
+        LEFT JOIN select_config sc on sc.type = 0 and sc.id = sv.spec_amount_id
+        LEFT JOIN member m on  sv.member_id_party_a = m.id
+        LEFT JOIN link_select ls on  ls.source_id = sv.id and ls.type = 6 and ls.del_flag = 0
+        <where>
+            <if test=" industryId != null and  industryId != '' ">
+                ls.select_config_id = #{industryId}
+            </if>
+            and sv.del_flag = 0
+            and (sv.type = 1 or sv.type = 0)
+            and sv.status = 1
+            and (m.verify_status = 2 or sv.member_id_party_a = #{memberId})
+        </where>
+
+        ORDER BY
+        sv.create_time DESC
+
+
+    </select>
+
+
+    <select id="selectHaveIndustryServer" resultMap="ServerIndustryRepMap">
+        SELECT sc.id, sc.val, sc.sequence, sc.pid
+        FROM select_config sc
+        where id in (
+            SELECT DISTINCT select_config_id FROM `link_select` WHERE del_flag = 0 AND type = 6 AND source_id 			IN (
+                SELECT DISTINCT s.member_id_party_a FROM `server`s
+                                                             LEFT JOIN `member` m ON s.member_id_party_a = m.id
+                where `status` = 1 and m.del_flag = 0 AND s.del_flag = 0 AND m.verify_status = 2
+            )
+        )or id in (
+            SELECT DISTINCT sc.pid FROM `select_config` sc LEFT JOIN `link_select` ls ON ls.select_config_id = sc.id WHERE ls.del_flag = 0 AND ls.type = 6 AND ls.source_id IN (
+                SELECT DISTINCT s.member_id_party_a FROM `server`s
+                LEFT JOIN `member` m ON s.member_id_party_a = m.id
+                where `status` = 1 and m.del_flag = 0 AND s.del_flag = 0 AND m.verify_status = 2
+            )
+        )
+
+    </select>
+
+    <select id="infoOrganizationServerPage" resultMap="InfoOrganizationServerPageMap">
+
+    SELECT
+    sv.id,
+    sv.address_province_name as addressProvinceName,
+    sv.address_city_name as addressCityName,
+    sv.solution_time as solutionTime ,
+    sv.title,sv.spec_amount_id as specAmountId,
+    sv.spec_area_id as specAreaId,
+    sc.val as val,
+    SUBSTRING(sv.description,1,100) AS description
+    FROM
+    `server` sv
+    LEFT JOIN select_config sc on  sc.id = sv.spec_amount_id
+    LEFT JOIN member m on  sv.member_id_party_a = m.id
+    WHERE
+    sv.organized_id_party_a = #{organizationId}  and sv.del_flag = 0 and sv.status = 1
+    <if test="verify == false">
+        and m.verify_status = 2
+    </if>
+    ORDER BY
+    sv.create_time DESC
+ </select>
+
+    <select id="findServerSize" resultType="int">
+        SELECT count(*)
+        FROM `server` s
+        LEFT JOIN member m on  s.member_id_party_a = m.id
+        WHERE s.del_flag = 0  and s.status = 1 and ( m.verify_status = 2
+              <if test="memberId != null and memberId != '' ">
+                    or s.member_id_party_a = #{memberId}
+              </if>
+            )
+    </select>
+
+    <resultMap id="severPageMap" type="com.qidao.application.entity.server.ServerPage">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="title" jdbcType="VARCHAR" property="title"/>
+        <result column="industry_id" jdbcType="VARCHAR" property="industryId"/>
+        <result column="address_province_name" jdbcType="VARCHAR" property="addressProvinceName"/>
+        <result column="address_city_name" jdbcType="VARCHAR" property="addressCityName"/>
+        <result column="address_area_name" jdbcType="VARCHAR" property="addressAreaName"/>
+        <result column="val" jdbcType="BIGINT" property="specAmountName"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="solution_time" jdbcType="TIMESTAMP" property="solutionTime"/>
+        <result column="memberId" jdbcType="BIGINT" property="memberId"/>
+        <result column="verify_status" jdbcType="INTEGER" property="status"/>
+        <result column="labels" jdbcType="INTEGER" property="labels"/>
+    </resultMap>
+    <select id="getServerList"
+    resultMap="severPageMap">
+        SELECT
+            s.id,
+            s.spec_amount_id,
+            s.title,
+            s.create_time,
+            s.industry_id ,
+            s.address_province_name,
+            s.address_city_name,
+            s.address_area_name,
+            s.solution_time,
+            m.id memberId,
+            m.verify_status,
+            sc.val ,
+            SUBSTRING(s.description,1,100) AS description,
+            GROUP_CONCAT(l.val) labels
+        from `server` s
+                 LEFT JOIN `member` m on s.member_id_party_a = m.id
+                 LEFT JOIN `select_config` sc on s.spec_amount_id = sc.id
+                 LEFT JOIN `link_label` ll on s.id = ll.source_id and ll.type = 1
+                 LEFT JOIN `label` l on ll.label_id = l.id
+                 LEFT JOIN `link_select` ls ON s.id = ls.source_id AND ls.type = 6 AND ls.del_flag = 0
+        where m.del_flag = 0 and s.del_flag = 0  AND s.`status` = 1 and ( m.verify_status=2 or m.id=#{memberId})
+        <if test="industryIds != null">
+            AND  ls.select_config_id in
+            <foreach item="industryId" collection="industryIds" index="index" open="(" separator="," close=")">
+                #{industryId}
+            </foreach>
+        </if>
+        <if test="specAreaId != null">
+            AND s.`spec_area_id` = #{specAreaId,jdbcType=BIGINT}
+        </if>
+        <if test="labels != null">
+        and ll.label_id in
+            <foreach collection="labels" item="labelId" open="(" separator="," close=")">
+                #{labelId}
+            </foreach>
+        </if>
+        GROUP BY s.id
+        ORDER BY s.create_time desc
+    </select>
+
+    <select id="listServerMemberId" resultType="com.qidao.application.vo.InfoServerPageRep">
+        SELECT
+        sv.id,
+        sv.address_province_name as addressProvinceName,
+        sv.address_city_name as addressCityName,
+        sv.solution_time as solutionTime ,
+        sv.title,sv.spec_amount_id as specAmountId,
+        sv.spec_area_id as specAreaId,
+        sc.val as specAmountName,
+        sa.val as specAreaName,
+        group_concat(l.val) AS label,
+        SUBSTRING(sv.description,1,100) AS description
+        FROM
+        `server` sv
+        LEFT JOIN select_config sc on sc.type = 3 and sc.id = sv.spec_amount_id
+        LEFT JOIN select_config sa on sa.type = 0 and sa.id = sv.spec_area_id
+        left join member m on sv.member_id_party_a = m.id
+        LEFT join `link_label` ll on sv.id = ll.source_id and ll.del_flag = 0
+        left join `label` l on ll.label_id = l.id
+        WHERE
+        sv.organized_id_party_a = #{id}  and sv.del_flag = 0 and sv.status = 1
+        <if test="verify == false">
+            and m.verify_status = 2
+        </if>
+        group by sv.id
+        ORDER BY
+        sv.create_time DESC
+    </select>
+
+
+</mapper>

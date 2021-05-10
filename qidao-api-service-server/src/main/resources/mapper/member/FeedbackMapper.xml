@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.member.FeedbackMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.entity.member.Feedback">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+    <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+    <result column="reason_id" jdbcType="BIGINT" property="reasonId" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="reply" jdbcType="VARCHAR" property="reply" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="reply_user_id" jdbcType="BIGINT" property="replyUserId" />
+    <result column="reply_user_name" jdbcType="VARCHAR" property="replyUserName" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, create_time, update_time, create_by, update_by, del_flag, reason_id, description, 
+    reply, status, member_id, level, reply_user_id, reply_user_name
+  </sql>
+  <select id="selectByExample" parameterType="com.qidao.application.entity.member.FeedbackExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from feedback
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="rows != null">
+      <if test="offset != null">
+        limit ${offset}, ${rows}
+      </if>
+      <if test="offset == null">
+        limit ${rows}
+      </if>
+    </if>
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select * from feedback
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from feedback
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from feedback
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.qidao.application.entity.member.FeedbackExample">
+    delete from feedback
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.qidao.application.entity.member.Feedback">
+    insert into feedback (id, create_time, update_time, 
+      create_by, update_by, del_flag, 
+      reason_id, description, reply, 
+      status, member_id, level, 
+      reply_user_id, reply_user_name)
+    values (#{id,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createBy,jdbcType=BIGINT}, #{updateBy,jdbcType=BIGINT}, #{delFlag,jdbcType=TINYINT}, 
+      #{reasonId,jdbcType=BIGINT}, #{description,jdbcType=VARCHAR}, #{reply,jdbcType=VARCHAR}, 
+      #{status,jdbcType=INTEGER}, #{memberId,jdbcType=BIGINT}, #{level,jdbcType=INTEGER}, 
+      #{replyUserId,jdbcType=BIGINT}, #{replyUserName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="map">
+    insert into feedback
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          ${column.escapedColumnName}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            id,
+          </if>
+          <if test="record.createTime != null">
+            create_time,
+          </if>
+          <if test="record.updateTime != null">
+            update_time,
+          </if>
+          <if test="record.createBy != null">
+            create_by,
+          </if>
+          <if test="record.updateBy != null">
+            update_by,
+          </if>
+          <if test="record.delFlag != null">
+            del_flag,
+          </if>
+          <if test="record.reasonId != null">
+            reason_id,
+          </if>
+          <if test="record.description != null">
+            description,
+          </if>
+          <if test="record.reply != null">
+            reply,
+          </if>
+          <if test="record.status != null">
+            status,
+          </if>
+          <if test="record.memberId != null">
+            member_id,
+          </if>
+          <if test="record.level != null">
+            level,
+          </if>
+          <if test="record.replyUserId != null">
+            reply_user_id,
+          </if>
+          <if test="record.replyUserName != null">
+            reply_user_name,
+          </if>
+        </trim>
+        <trim prefix="(" suffix=")" suffixOverrides="," />
+      </otherwise>
+    </choose>
+    values
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.createTime != null">
+            #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            #{record.delFlag,jdbcType=TINYINT},
+          </if>
+          <if test="record.reasonId != null">
+            #{record.reasonId,jdbcType=BIGINT},
+          </if>
+          <if test="record.description != null">
+            #{record.description,jdbcType=VARCHAR},
+          </if>
+          <if test="record.reply != null">
+            #{record.reply,jdbcType=VARCHAR},
+          </if>
+          <if test="record.status != null">
+            #{record.status,jdbcType=INTEGER},
+          </if>
+          <if test="record.memberId != null">
+            #{record.memberId,jdbcType=BIGINT},
+          </if>
+          <if test="record.level != null">
+            #{record.level,jdbcType=INTEGER},
+          </if>
+          <if test="record.replyUserId != null">
+            #{record.replyUserId,jdbcType=BIGINT},
+          </if>
+          <if test="record.replyUserName != null">
+            #{record.replyUserName,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+  </insert>
+  <select id="countByExample" parameterType="com.qidao.application.entity.member.FeedbackExample" resultType="java.lang.Long">
+    select count(*) from feedback
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update feedback
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.id != null">
+            id = #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.createTime != null">
+            create_time = #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            create_by = #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            update_by = #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+          <if test="record.reasonId != null">
+            reason_id = #{record.reasonId,jdbcType=BIGINT},
+          </if>
+          <if test="record.description != null">
+            description = #{record.description,jdbcType=VARCHAR},
+          </if>
+          <if test="record.reply != null">
+            reply = #{record.reply,jdbcType=VARCHAR},
+          </if>
+          <if test="record.status != null">
+            status = #{record.status,jdbcType=INTEGER},
+          </if>
+          <if test="record.memberId != null">
+            member_id = #{record.memberId,jdbcType=BIGINT},
+          </if>
+          <if test="record.level != null">
+            level = #{record.level,jdbcType=INTEGER},
+          </if>
+          <if test="record.replyUserId != null">
+            reply_user_id = #{record.replyUserId,jdbcType=BIGINT},
+          </if>
+          <if test="record.replyUserName != null">
+            reply_user_name = #{record.replyUserName,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update feedback
+    set id = #{record.id,jdbcType=BIGINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      create_by = #{record.createBy,jdbcType=BIGINT},
+      update_by = #{record.updateBy,jdbcType=BIGINT},
+      del_flag = #{record.delFlag,jdbcType=TINYINT},
+      reason_id = #{record.reasonId,jdbcType=BIGINT},
+      description = #{record.description,jdbcType=VARCHAR},
+      reply = #{record.reply,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=INTEGER},
+      member_id = #{record.memberId,jdbcType=BIGINT},
+      level = #{record.level,jdbcType=INTEGER},
+      reply_user_id = #{record.replyUserId,jdbcType=BIGINT},
+      reply_user_name = #{record.replyUserName,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="map">
+    update feedback
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.createTime != null">
+            create_time = #{record.createTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.updateTime != null">
+            update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+          </if>
+          <if test="record.createBy != null">
+            create_by = #{record.createBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.updateBy != null">
+            update_by = #{record.updateBy,jdbcType=BIGINT},
+          </if>
+          <if test="record.delFlag != null">
+            del_flag = #{record.delFlag,jdbcType=TINYINT},
+          </if>
+          <if test="record.reasonId != null">
+            reason_id = #{record.reasonId,jdbcType=BIGINT},
+          </if>
+          <if test="record.description != null">
+            description = #{record.description,jdbcType=VARCHAR},
+          </if>
+          <if test="record.reply != null">
+            reply = #{record.reply,jdbcType=VARCHAR},
+          </if>
+          <if test="record.status != null">
+            status = #{record.status,jdbcType=INTEGER},
+          </if>
+          <if test="record.memberId != null">
+            member_id = #{record.memberId,jdbcType=BIGINT},
+          </if>
+          <if test="record.level != null">
+            level = #{record.level,jdbcType=INTEGER},
+          </if>
+          <if test="record.replyUserId != null">
+            reply_user_id = #{record.replyUserId,jdbcType=BIGINT},
+          </if>
+          <if test="record.replyUserName != null">
+            reply_user_name = #{record.replyUserName,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    where id = #{record.id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qidao.application.entity.member.Feedback">
+    update feedback
+    set create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_by = #{createBy,jdbcType=BIGINT},
+      update_by = #{updateBy,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=TINYINT},
+      reason_id = #{reasonId,jdbcType=BIGINT},
+      description = #{description,jdbcType=VARCHAR},
+      reply = #{reply,jdbcType=VARCHAR},
+      status = #{status,jdbcType=INTEGER},
+      member_id = #{memberId,jdbcType=BIGINT},
+      level = #{level,jdbcType=INTEGER},
+      reply_user_id = #{replyUserId,jdbcType=BIGINT},
+      reply_user_name = #{replyUserName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectOneByExample" parameterType="com.qidao.application.entity.member.FeedbackExample" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from feedback
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+  <insert id="batchInsert" parameterType="map">
+    insert into feedback
+    (id, create_time, update_time, create_by, update_by, del_flag, reason_id, description, 
+      reply, status, member_id, level, reply_user_id, reply_user_name)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.createTime,jdbcType=TIMESTAMP}, #{item.updateTime,jdbcType=TIMESTAMP}, 
+        #{item.createBy,jdbcType=BIGINT}, #{item.updateBy,jdbcType=BIGINT}, #{item.delFlag,jdbcType=TINYINT}, 
+        #{item.reasonId,jdbcType=BIGINT}, #{item.description,jdbcType=VARCHAR}, #{item.reply,jdbcType=VARCHAR}, 
+        #{item.status,jdbcType=INTEGER}, #{item.memberId,jdbcType=BIGINT}, #{item.level,jdbcType=INTEGER}, 
+        #{item.replyUserId,jdbcType=BIGINT}, #{item.replyUserName,jdbcType=VARCHAR})
+    </foreach>
+  </insert>
+  <insert id="batchInsertSelective" parameterType="map">
+    insert into feedback (
+    <foreach collection="selective" item="column" separator=",">
+      ${column.escapedColumnName}
+    </foreach>
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (
+      <foreach collection="selective" item="column" separator=",">
+        <if test="'id'.toString() == column.value">
+          #{item.id,jdbcType=BIGINT}
+        </if>
+        <if test="'create_time'.toString() == column.value">
+          #{item.createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'update_time'.toString() == column.value">
+          #{item.updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="'create_by'.toString() == column.value">
+          #{item.createBy,jdbcType=BIGINT}
+        </if>
+        <if test="'update_by'.toString() == column.value">
+          #{item.updateBy,jdbcType=BIGINT}
+        </if>
+        <if test="'del_flag'.toString() == column.value">
+          #{item.delFlag,jdbcType=TINYINT}
+        </if>
+        <if test="'reason_id'.toString() == column.value">
+          #{item.reasonId,jdbcType=BIGINT}
+        </if>
+        <if test="'description'.toString() == column.value">
+          #{item.description,jdbcType=VARCHAR}
+        </if>
+        <if test="'reply'.toString() == column.value">
+          #{item.reply,jdbcType=VARCHAR}
+        </if>
+        <if test="'status'.toString() == column.value">
+          #{item.status,jdbcType=INTEGER}
+        </if>
+        <if test="'member_id'.toString() == column.value">
+          #{item.memberId,jdbcType=BIGINT}
+        </if>
+        <if test="'level'.toString() == column.value">
+          #{item.level,jdbcType=INTEGER}
+        </if>
+        <if test="'reply_user_id'.toString() == column.value">
+          #{item.replyUserId,jdbcType=BIGINT}
+        </if>
+        <if test="'reply_user_name'.toString() == column.value">
+          #{item.replyUserName,jdbcType=VARCHAR}
+        </if>
+      </foreach>
+      )
+    </foreach>
+  </insert>
+</mapper>

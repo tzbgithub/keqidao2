@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qidao.application.mapper.label.CustomLabelMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.entity.label.Label">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+        <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+        <result column="val" jdbcType="VARCHAR" property="val" />
+    </resultMap>
+    <select id="getByMemberId" resultType="com.qidao.application.entity.label.Label">
+        SELECT a.id, a.val
+        from `label` a
+                 JOIN `link_label` b on a.id = b.label_id
+        where b.source_id = #{memberId}
+          and a.del_flag = 0
+          and b.del_flag = 0
+          and b.type = 3
+    </select>
+
+    <select id="listAchievementLabel" resultType="com.qidao.application.entity.label.Label">
+        SELECT l.id AS 'id', l.`val` AS 'val'
+        FROM label l
+                 LEFT JOIN link_label ll ON l.id = ll.label_id
+                 LEFT JOIN member m ON m.id = ll.source_id
+
+        WHERE ll.type = 3
+          AND m.id = #{memberId}
+    </select>
+    <select id="getLabelsBySourceIds" resultType="com.qidao.application.entity.label.Label">
+        SELECT DISTINCT label.val AS 'val', link_label.source_id AS 'id'
+        FROM link_label
+                 LEFT JOIN label on link_label.label_id = label.id
+        WHERE link_label.source_id IN
+        <foreach collection="sourceIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+          AND link_label.type = #{type}
+          AND link_label.del_flag = 0
+          AND label.del_flag = 0
+    </select>
+
+    <select id="selectLinkLabel" resultType="String">
+               SELECT
+	GROUP_CONCAT(b.val) as val
+FROM
+	link_label lb
+LEFT JOIN label b ON lb.label_id = b.id
+        WHERE lb.source_id = #{memberId} AND lb.type = #{type} and lb.del_flag = 0 and b.del_flag = 0
+    </select>
+</mapper>

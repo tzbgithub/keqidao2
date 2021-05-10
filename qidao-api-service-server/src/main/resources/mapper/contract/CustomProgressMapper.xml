@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.contract.CustomProgressMapper">
+    <resultMap id="BaseResultMap" type="com.qidao.application.entity.contract.Progress">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+        <result column="create_by" jdbcType="BIGINT" property="createBy" />
+        <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+        <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+        <result column="contract_id" jdbcType="BIGINT" property="contractId" />
+        <result column="begin_time" jdbcType="TIMESTAMP" property="beginTime" />
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+        <result column="sequence" jdbcType="INTEGER" property="sequence" />
+        <result column="title" jdbcType="VARCHAR" property="title" />
+        <result column="status" jdbcType="INTEGER" property="status" />
+        <result column="step" jdbcType="VARCHAR" property="step" />
+        <result column="description" jdbcType="VARCHAR" property="description" />
+        <result column="confirm_time" jdbcType="TIMESTAMP" property="confirmTime" />
+        <result column="done_time" jdbcType="TIMESTAMP" property="doneTime" />
+        <result column="check_time" jdbcType="TIMESTAMP" property="checkTime" />
+    </resultMap>
+    <select id="getProgressListByContractIds" resultMap="BaseResultMap">
+        SELECT progress.id,
+        progress.contract_id,
+        progress.step,
+        progress.`status`
+        FROM progress
+        WHERE progress.contract_id IN
+        <foreach item="contractId" collection="contractIds" open="(" separator="," close=")">
+            #{contractId}
+        </foreach>
+        AND progress.id
+        IN (
+            SELECT progress.id
+            FROM
+            progress
+            WHERE
+            (progress.contract_id, progress.update_time)
+            IN
+            (SELECT progress.contract_id, MAX(progress.update_time) AS update_time
+            FROM progress
+            GROUP BY progress.contract_id)
+        )
+        AND progress.del_flag = #{delFlag,jdbcType=TINYINT}
+    </select>
+</mapper>

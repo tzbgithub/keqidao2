@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qidao.application.mapper.msg.CustomMsgRecordMapper">
+    <select id="getMemberIdsByMsgId" resultType="java.lang.String">
+        SELECT DISTINCT member_id
+        FROM `msg_record`
+        WHERE msg_id = #{msgId}
+          AND del_flag = 0
+    </select>
+
+    <select id="getAllNoticeMsgRecordPage" parameterType="com.qidao.application.vo.NoticeMsgRecordPageReqVo"
+            resultType="com.qidao.application.vo.NoticeMsgRecordPageRespVo">
+        SELECT mr.id id,
+        mr.`status` `status`,
+        mr.send_time sendTime,
+        m.id msgId,
+        m.title title,
+        m.content content,
+        m.path_pc pathPc,
+        m.path_app pathApp,
+        m.path_type_app pathTypeApp
+        FROM msg_record mr
+        INNER JOIN msg m ON m.id = mr.msg_id
+        LEFT JOIN msg_menu mm ON mm.id = m.menu_id
+        WHERE mr.del_flag = 0
+        AND m.del_flag = 0
+        AND mm.msg_level IN (0, 2)
+        <if test="memberId != null">
+            AND mr.member_id = #{memberId}
+        </if>
+        <if test="statusList != null and statusList.size() > 0">
+            AND mr.`status` in
+            <foreach close=")" collection="statusList" item="listItem" open="(" separator=",">
+                #{listItem}
+            </foreach>
+        </if>
+        <if test="menuId != null">
+            AND mm.id = #{menuId}
+        </if>
+        order by mr.`status`,mr.send_time desc
+    </select>
+</mapper>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.address.AddressAreaMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.entity.address.AddressArea">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="area_code" jdbcType="CHAR" property="areaCode" />
+    <result column="area_name" jdbcType="VARCHAR" property="areaName" />
+    <result column="city_code" jdbcType="CHAR" property="cityCode" />
+    <result column="lng" jdbcType="VARCHAR" property="lng" />
+    <result column="lat" jdbcType="VARCHAR" property="lat" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, area_code, area_name, city_code, lng, lat
+  </sql>
+  <select id="selectByExample" parameterType="com.qidao.application.entity.address.AddressAreaExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from address_area
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="rows != null">
+      <if test="offset != null">
+        limit ${offset}, ${rows}
+      </if>
+      <if test="offset == null">
+        limit ${rows}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from address_area
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from address_area
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.qidao.application.entity.address.AddressAreaExample">
+    delete from address_area
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.qidao.application.entity.address.AddressArea">
+    insert into address_area (id, area_code, area_name, 
+      city_code, lng, lat)
+    values (#{id,jdbcType=BIGINT}, #{areaCode,jdbcType=CHAR}, #{areaName,jdbcType=VARCHAR}, 
+      #{cityCode,jdbcType=CHAR}, #{lng,jdbcType=VARCHAR}, #{lat,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="map">
+    insert into address_area
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          ${column.escapedColumnName}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            id,
+          </if>
+          <if test="record.areaCode != null">
+            area_code,
+          </if>
+          <if test="record.areaName != null">
+            area_name,
+          </if>
+          <if test="record.cityCode != null">
+            city_code,
+          </if>
+          <if test="record.lng != null">
+            lng,
+          </if>
+          <if test="record.lat != null">
+            lat,
+          </if>
+        </trim>
+        <trim prefix="(" suffix=")" suffixOverrides="," />
+      </otherwise>
+    </choose>
+    values
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach close=")" collection="selective" item="column" open="(" separator=",">
+          #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+          <if test="record.id != null">
+            #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.areaCode != null">
+            #{record.areaCode,jdbcType=CHAR},
+          </if>
+          <if test="record.areaName != null">
+            #{record.areaName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.cityCode != null">
+            #{record.cityCode,jdbcType=CHAR},
+          </if>
+          <if test="record.lng != null">
+            #{record.lng,jdbcType=VARCHAR},
+          </if>
+          <if test="record.lat != null">
+            #{record.lat,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+  </insert>
+  <select id="countByExample" parameterType="com.qidao.application.entity.address.AddressAreaExample" resultType="java.lang.Long">
+    select count(*) from address_area
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update address_area
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.id != null">
+            id = #{record.id,jdbcType=BIGINT},
+          </if>
+          <if test="record.areaCode != null">
+            area_code = #{record.areaCode,jdbcType=CHAR},
+          </if>
+          <if test="record.areaName != null">
+            area_name = #{record.areaName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.cityCode != null">
+            city_code = #{record.cityCode,jdbcType=CHAR},
+          </if>
+          <if test="record.lng != null">
+            lng = #{record.lng,jdbcType=VARCHAR},
+          </if>
+          <if test="record.lat != null">
+            lat = #{record.lat,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update address_area
+    set id = #{record.id,jdbcType=BIGINT},
+      area_code = #{record.areaCode,jdbcType=CHAR},
+      area_name = #{record.areaName,jdbcType=VARCHAR},
+      city_code = #{record.cityCode,jdbcType=CHAR},
+      lng = #{record.lng,jdbcType=VARCHAR},
+      lat = #{record.lat,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="map">
+    update address_area
+    SET
+    <choose>
+      <when test="selective != null and selective.length > 0">
+        <foreach collection="selective" item="column" separator=",">
+          ${column.escapedColumnName} = #{record.${column.javaProperty},jdbcType=${column.jdbcType}}
+        </foreach>
+      </when>
+      <otherwise>
+        <trim suffixOverrides=",">
+          <if test="record.areaCode != null">
+            area_code = #{record.areaCode,jdbcType=CHAR},
+          </if>
+          <if test="record.areaName != null">
+            area_name = #{record.areaName,jdbcType=VARCHAR},
+          </if>
+          <if test="record.cityCode != null">
+            city_code = #{record.cityCode,jdbcType=CHAR},
+          </if>
+          <if test="record.lng != null">
+            lng = #{record.lng,jdbcType=VARCHAR},
+          </if>
+          <if test="record.lat != null">
+            lat = #{record.lat,jdbcType=VARCHAR},
+          </if>
+        </trim>
+      </otherwise>
+    </choose>
+    where id = #{record.id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.qidao.application.entity.address.AddressArea">
+    update address_area
+    set area_code = #{areaCode,jdbcType=CHAR},
+      area_name = #{areaName,jdbcType=VARCHAR},
+      city_code = #{cityCode,jdbcType=CHAR},
+      lng = #{lng,jdbcType=VARCHAR},
+      lat = #{lat,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectOneByExample" parameterType="com.qidao.application.entity.address.AddressAreaExample" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from address_area
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+  <insert id="batchInsert" parameterType="map">
+    insert into address_area
+    (id, area_code, area_name, city_code, lng, lat)
+    values
+    <foreach collection="list" item="item" separator=",">
+      (#{item.id,jdbcType=BIGINT}, #{item.areaCode,jdbcType=CHAR}, #{item.areaName,jdbcType=VARCHAR}, 
+        #{item.cityCode,jdbcType=CHAR}, #{item.lng,jdbcType=VARCHAR}, #{item.lat,jdbcType=VARCHAR}
+        )
+    </foreach>
+  </insert>
+  <insert id="batchInsertSelective" parameterType="map">
+    insert into address_area (
+    <foreach collection="selective" item="column" separator=",">
+      ${column.escapedColumnName}
+    </foreach>
+    )
+    values
+    <foreach collection="list" item="item" separator=",">
+      (
+      <foreach collection="selective" item="column" separator=",">
+        <if test="'id'.toString() == column.value">
+          #{item.id,jdbcType=BIGINT}
+        </if>
+        <if test="'area_code'.toString() == column.value">
+          #{item.areaCode,jdbcType=CHAR}
+        </if>
+        <if test="'area_name'.toString() == column.value">
+          #{item.areaName,jdbcType=VARCHAR}
+        </if>
+        <if test="'city_code'.toString() == column.value">
+          #{item.cityCode,jdbcType=CHAR}
+        </if>
+        <if test="'lng'.toString() == column.value">
+          #{item.lng,jdbcType=VARCHAR}
+        </if>
+        <if test="'lat'.toString() == column.value">
+          #{item.lat,jdbcType=VARCHAR}
+        </if>
+      </foreach>
+      )
+    </foreach>
+  </insert>
+</mapper>

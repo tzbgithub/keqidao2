@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qidao.application.mapper.organization.CustomAchievementEquipmentMapper">
+  <resultMap id="BaseResultMap" type="com.qidao.application.entity.organization.AchievementEquipment">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_by" jdbcType="BIGINT" property="createBy" />
+    <result column="update_by" jdbcType="BIGINT" property="updateBy" />
+    <result column="del_flag" jdbcType="TINYINT" property="delFlag" />
+    <result column="organization_id" jdbcType="BIGINT" property="organizationId" />
+    <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+      <result column="url" jdbcType="VARCHAR" property="url" />
+      <result column="maturity" jdbcType="INTEGER" property="maturity" />
+    <result column="video" jdbcType="VARCHAR" property="video" />
+    <result column="thumb" jdbcType="VARCHAR" property="thumb" />
+    <result column="imgs" jdbcType="VARCHAR" property="imgs" />
+    <result column="summary" jdbcType="VARCHAR" property="summary" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="verify_status" jdbcType="INTEGER" property="verifyStatus" />
+    <result column="verify_reason" jdbcType="VARCHAR" property="verifyReason" />
+    <result column="verify_user_id" jdbcType="BIGINT" property="verifyUserId" />
+  </resultMap>
+
+    <resultMap id="AchievementListDtoMap" type="com.qidao.application.vo.AchievementListReq">
+    </resultMap>
+
+    <select id="findAchievementPage" resultMap="AchievementListDtoMap">
+       <!-- SELECT DISTINCT
+        ac.organization_id,
+        ac.title,
+        ac.thumb,
+        ac.imgs,
+        ac.summary,
+        ac.create_time,
+        ac.url,
+        ac.id,
+        ac.video,
+        ac.maturity,
+        FROM
+        achievement_equipment ac
+        LEFT JOIN link_select ls ON
+        ac.id = ls.source_id
+
+        LEFT JOIN member m on ac.member_id = m.id
+
+        WHERE
+        ac.organization_id = #{organizationId}
+            AND ac.del_flag = 0 and ls.del_flag = 0
+
+            <if test="type!=null and type !=''">
+              and   ls.select_config_id = #{type}
+            </if>
+        ORDER BY ac.create_time desc
+-->
+
+
+
+        SELECT DISTINCT
+        ac.organization_id as organizationId,
+        ac.title,
+        ac.thumb,
+        ac.imgs,
+        ac.summary,
+        ac.create_time as createTime,
+        ac.url,
+        ac.id,
+        ac.content,
+        ac.type,
+        ac.video,
+        ac.maturity,
+        ac.member_id,
+        m.belong,
+        m. NAME,
+        m.position_id AS positionId,
+        m.education_id AS educationId,
+        m.head_image as headImage,
+        o.`name` AS organizationName
+        FROM
+        achievement_equipment ac
+        LEFT JOIN link_select ls ON ac.id = ls.source_id
+        LEFT JOIN member m ON ac.member_id = m.id
+        LEFT JOIN organization o ON o.id = m.organization_id
+        WHERE
+        ac.organization_id = #{organizationId}
+        AND ac.del_flag = 0
+        AND ls.del_flag = 0
+        <if test="type!=null and type !=''">
+            and   ls.select_config_id = #{type}
+        </if>
+        ORDER BY ac.create_time desc
+    </select>
+
+</mapper>
